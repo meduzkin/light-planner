@@ -57,59 +57,59 @@
 <body>
 <div id="app">
   <aside id="side">
-    <h1>Light Spot Planner <small>· 2D/3D</small></h1>
+    <h1>Light Spot Planner <small data-i18n="subtitle">· 2D/3D</small><button id="lang" style="float:right;padding:3px 8px;font-size:11px">EN</button></h1>
     <div class="scroll">
       <div class="grp">
         <div class="btnrow">
-          <button id="drawWall">✏ Рисовать стены</button>
-          <button id="addWin">+ Окно/дверь</button>
+          <button id="drawWall" data-i18n="btn_draw">✏ Рисовать стены</button>
+          <button id="addWin" data-i18n="btn_win">+ Окно/дверь</button>
         </div>
         <div class="btnrow">
-          <button class="primary" id="addLight">+ Светильник</button>
-          <button id="addTrack">+ Шина</button>
-          <button class="obj" id="addObj">+ Объект</button>
+          <button class="primary" id="addLight" data-i18n="btn_light">+ Светильник</button>
+          <button id="addTrack" data-i18n="btn_track">+ Шина</button>
+          <button class="obj" id="addObj" data-i18n="btn_obj">+ Объект</button>
         </div>
         <div class="btnrow">
-          <button id="load">Загрузить</button>
-          <button id="save">Сохранить</button>
-          <button id="demo">Демо</button>
-          <button id="fit">По размеру</button>
+          <button id="load" data-i18n="btn_load">Загрузить</button>
+          <button id="save" data-i18n="btn_save">Сохранить</button>
+          <button id="demo" data-i18n="btn_demo">Демо</button>
+          <button id="fit" data-i18n="btn_fit">По размеру</button>
         </div>
       </div>
 
       <div class="grp">
-        <label>Параметры</label>
-        <div class="row"><label>Потолок, м</label><input id="rc" type="number" step="0.1"></div>
-        <div class="row"><label>Сетка, м</label><input id="rg" type="number" step="0.1"></div>
+        <label data-i18n="grp_params">Параметры</label>
+        <div class="row"><label data-i18n="lbl_ceil">Потолок, м</label><input id="rc" type="number" step="0.1"></div>
+        <div class="row"><label data-i18n="lbl_grid">Сетка, м</label><input id="rg" type="number" step="0.1"></div>
       </div>
 
-      <div class="grp"><label>Стены</label><div class="cards" id="c_walls"></div></div>
-      <div class="grp"><label>Окна / двери</label><div class="cards" id="c_wins"></div></div>
-      <div class="grp"><label>Шины</label><div class="cards" id="c_tracks"></div></div>
-      <div class="grp"><label>Светильники</label><div class="cards" id="c_lights"></div></div>
-      <div class="grp"><label>Объекты</label><div class="cards" id="c_objs"></div></div>
+      <div class="grp"><label data-i18n="grp_walls">Стены</label><div class="cards" id="c_walls"></div></div>
+      <div class="grp"><label data-i18n="grp_wins">Окна / двери</label><div class="cards" id="c_wins"></div></div>
+      <div class="grp"><label data-i18n="grp_tracks">Шины</label><div class="cards" id="c_tracks"></div></div>
+      <div class="grp"><label data-i18n="grp_lights">Светильники</label><div class="cards" id="c_lights"></div></div>
+      <div class="grp"><label data-i18n="grp_objs">Объекты</label><div class="cards" id="c_objs"></div></div>
 
       <div class="hr"></div>
       <div id="editor" class="grp"></div>
       <div class="hr"></div>
 
       <div class="grp">
-        <label>Солнце / дневной свет (3D)</label>
-        <label class="chk"><input type="checkbox" id="d_on" checked> Включить</label>
-        <div class="row"><label>Яркость</label><input id="d_sun" type="range" min="0" max="8" step="0.1" value="3.2"><span class="val" id="d_sun_v">3.2</span></div>
-        <div class="row"><label>Мягкость</label><input id="d_soft" type="range" min="1" max="20" step="1" value="7"><span class="val" id="d_soft_v">7</span></div>
-        <div class="row"><label>Подсветка окон</label><input id="d_win" type="range" min="0" max="12" step="0.5" value="4"><span class="val" id="d_win_v">4</span></div>
-        <div class="row"><label>Свет неба</label><input id="d_sky" type="range" min="0" max="1.5" step="0.05" value="0.45"><span class="val" id="d_sky_v">.45</span></div>
-        <div class="row"><label>Цвет</label><input id="d_color" type="color" class="color" value="#fff3df"></div>
+        <label data-i18n="grp_sun">Солнце / дневной свет (3D)</label>
+        <label class="chk"><input type="checkbox" id="d_on" checked> <span data-i18n="sun_on">Включить</span></label>
+        <div class="row"><label data-i18n="sun_bright">Яркость</label><input id="d_sun" type="range" min="0" max="8" step="0.1" value="3.2"><span class="val" id="d_sun_v">3.2</span></div>
+        <div class="row"><label data-i18n="sun_soft">Мягкость</label><input id="d_soft" type="range" min="1" max="20" step="1" value="7"><span class="val" id="d_soft_v">7</span></div>
+        <div class="row"><label data-i18n="sun_winlight">Подсветка окон</label><input id="d_win" type="range" min="0" max="12" step="0.5" value="4"><span class="val" id="d_win_v">4</span></div>
+        <div class="row"><label data-i18n="sun_sky">Свет неба</label><input id="d_sky" type="range" min="0" max="1.5" step="0.05" value="0.45"><span class="val" id="d_sky_v">.45</span></div>
+        <div class="row"><label data-i18n="sun_colorlbl">Цвет</label><input id="d_color" type="color" class="color" value="#fff3df"></div>
       </div>
 
       <div class="grp">
-        <label>Светильники: свет/тени (3D)</label>
-        <div class="row"><label>Яркость</label><input id="intensity" type="range" min="0" max="40" step="0.5" value="10"><span class="val" id="intensity_v">10</span></div>
-        <div class="row"><label>Заполняющий</label><input id="ambient" type="range" min="0" max="1.5" step="0.05" value="0.18"><span class="val" id="ambient_v">.18</span></div>
-        <div class="row"><label>Мягкость теней</label><input id="soft" type="range" min="1" max="12" step="1" value="4"><span class="val" id="soft_v">4</span></div>
-        <label class="chk"><input type="checkbox" id="t_ceiling"> Видимый потолок</label>
-        <label class="chk"><input type="checkbox" id="t_helpers"> Конусы лучей</label>
+        <label data-i18n="grp_lt">Светильники: свет/тени (3D)</label>
+        <div class="row"><label data-i18n="lt_bright">Яркость</label><input id="intensity" type="range" min="0" max="40" step="0.5" value="10"><span class="val" id="intensity_v">10</span></div>
+        <div class="row"><label data-i18n="lt_fill">Заполняющий</label><input id="ambient" type="range" min="0" max="1.5" step="0.05" value="0.18"><span class="val" id="ambient_v">.18</span></div>
+        <div class="row"><label data-i18n="lt_shadowsoft">Мягкость теней</label><input id="soft" type="range" min="1" max="12" step="1" value="4"><span class="val" id="soft_v">4</span></div>
+        <label class="chk"><input type="checkbox" id="t_ceiling"> <span data-i18n="t_ceiling">Видимый потолок</span></label>
+        <label class="chk"><input type="checkbox" id="t_helpers"> <span data-i18n="t_helpers">Конусы лучей</span></label>
       </div>
       <div class="grp"><div class="mini" id="info"></div></div>
     </div>
@@ -117,8 +117,8 @@
   <main id="stage">
     <canvas id="cv2d"></canvas>
     <canvas id="cv"></canvas>
-    <div id="modesw"><button id="m2d" class="sel">2D план</button><button id="m3d">3D вид</button></div>
-    <div id="gizmosw" style="display:none"><button id="g_move" class="sel">Перемещение</button><button id="g_off">Обзор</button></div>
+    <div id="modesw"><button id="m2d" class="sel" data-i18n="m2d">2D план</button><button id="m3d" data-i18n="m3d">3D вид</button></div>
+    <div id="gizmosw" style="display:none"><button id="g_move" class="sel" data-i18n="g_move">Перемещение</button><button id="g_off" data-i18n="g_off">Обзор</button></div>
     <div id="hint"></div>
     <div id="err"></div>
   </main>
@@ -142,6 +142,39 @@ const D2R=Math.PI/180, TAU=Math.PI*2;
 const errBox=$('#err'); const showErr=m=>{errBox.style.display='block';errBox.textContent=m;}; const clearErr=()=>errBox.style.display='none';
 const round=v=>Math.round(v*100)/100;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+/* ================= i18n ================= */
+let lang='ru';
+const T={ru:{
+  subtitle:'· 2D/3D',btn_draw:'✏ Рисовать стены',btn_win:'+ Окно/дверь',btn_light:'+ Светильник',btn_track:'+ Шина',btn_obj:'+ Объект',btn_load:'Загрузить',btn_save:'Сохранить',btn_demo:'Демо',btn_fit:'По размеру',
+  grp_params:'Параметры',lbl_ceil:'Потолок, м',lbl_grid:'Сетка, м',grp_walls:'Стены',grp_wins:'Окна / двери',grp_tracks:'Шины',grp_lights:'Светильники',grp_objs:'Объекты',
+  grp_sun:'Солнце / дневной свет (3D)',sun_on:'Включить',sun_bright:'Яркость',sun_soft:'Мягкость',sun_winlight:'Подсветка окон',sun_sky:'Свет неба',sun_colorlbl:'Цвет',
+  grp_lt:'Светильники: свет/тени (3D)',lt_bright:'Яркость',lt_fill:'Заполняющий',lt_shadowsoft:'Мягкость теней',t_ceiling:'Видимый потолок',t_helpers:'Конусы лучей',m2d:'2D план',m3d:'3D вид',g_move:'Перемещение',g_off:'Обзор',
+  ed_light:'Светильник',f_name:'Имя',f_color:'Цвет',f_shape:'Форма',sh_point:'Точечный',sh_line:'Линейный',sh_rect:'Панель',f_x:'X, м',f_y:'Y, м',f_height:'Высота, м',f_len:'Длина, м',f_width:'Ширина, м',f_n_along:'Диодов вдоль',f_n_across:'Поперёк',f_count:'Кол-во',f_beam:'Beam°',f_field:'Field°',f_tilt:'Наклон β°',f_az:'Азимут°',f_rot:'Поворот°',f_track:'Шина',track_none:'— не на шине —',f_u:'Смещение u, м',btn_addfix:'+ светильник на шину',btn_distrib:'Распределить',btn_pitch:'По шагу…',
+  ed_obj:'Объект',f_depth:'Глубина, м',f_base:'Низ над полом, м',ed_wall:'Стена',ed_win:'Окно / дверь',f_type:'Тип',ty_window:'Окно',ty_door:'Дверь (в пол)',f_pos:'Позиция, м',f_sill:'Подоконник, м',f_openh:'Высота проёма, м',ed_sun:'Точка солнца',f_sunheight:'Высота, м',btn_del:'Удалить',
+  hint_empty:'2D: рисуй стены, ставь окна/двери/мебель, тащи мышью. 3D: тени и дневной свет, gizmo двигает выбранное.',mini_wall:'Длина {0}м. В 2D тащи целиком или за концы.',mini_win:'В 2D тащи окно — скользит по стене и прыгает на ближайшую.',mini_sun:'В 2D/3D тащи жёлтую точку — направление света от неё.',
+  card_wall:'стена',card_door:'дверь',card_window:'окно',card_spot:'спот',card_pcs:'св.',
+  hint2d:'клик — выбрать · тащить — двигать · ПКМ/Space — панорама · колесо — зум',hint2d_draw:'Рисование стен: клик — точка, двойной клик / Esc — закончить',hint3d:'клик — выбрать · gizmo — двигать · окно/солнце тащи · ЛКМ-фон — вращать · колесо — зум',
+  info:'{0} стен · {1} окон/дверей · {2} св. · {3} шин · {4} об.',prompt_pitch:'Шаг, мм:',err_drawfirst:'Сначала нарисуй стены (2D).',err_noscene:'Нет сохранённой сцены.',err_parse:'Не разобрать: ',saved:'Сохранено ✓'
+},en:{
+  subtitle:'· 2D/3D',btn_draw:'✏ Draw walls',btn_win:'+ Window/door',btn_light:'+ Light',btn_track:'+ Track',btn_obj:'+ Object',btn_load:'Load',btn_save:'Save',btn_demo:'Demo',btn_fit:'Fit',
+  grp_params:'Parameters',lbl_ceil:'Ceiling, m',lbl_grid:'Grid, m',grp_walls:'Walls',grp_wins:'Windows / doors',grp_tracks:'Tracks',grp_lights:'Lights',grp_objs:'Objects',
+  grp_sun:'Sun / daylight (3D)',sun_on:'Enable',sun_bright:'Brightness',sun_soft:'Softness',sun_winlight:'Window fill',sun_sky:'Sky light',sun_colorlbl:'Color',
+  grp_lt:'Lights: light/shadows (3D)',lt_bright:'Brightness',lt_fill:'Ambient',lt_shadowsoft:'Shadow softness',t_ceiling:'Show ceiling',t_helpers:'Beam cones',m2d:'2D plan',m3d:'3D view',g_move:'Move',g_off:'Orbit',
+  ed_light:'Light',f_name:'Name',f_color:'Color',f_shape:'Shape',sh_point:'Spot',sh_line:'Linear',sh_rect:'Panel',f_x:'X, m',f_y:'Y, m',f_height:'Height, m',f_len:'Length, m',f_width:'Width, m',f_n_along:'LEDs along',f_n_across:'across',f_count:'Count',f_beam:'Beam°',f_field:'Field°',f_tilt:'Tilt β°',f_az:'Azimuth°',f_rot:'Rotation°',f_track:'Track',track_none:'— off track —',f_u:'Offset u, m',btn_addfix:'+ light on track',btn_distrib:'Distribute',btn_pitch:'By pitch…',
+  ed_obj:'Object',f_depth:'Depth, m',f_base:'Bottom above floor, m',ed_wall:'Wall',ed_win:'Window / door',f_type:'Type',ty_window:'Window',ty_door:'Door (to floor)',f_pos:'Position, m',f_sill:'Sill, m',f_openh:'Opening height, m',ed_sun:'Sun point',f_sunheight:'Height, m',btn_del:'Delete',
+  hint_empty:'2D: draw walls, place windows/doors/furniture, drag with mouse. 3D: shadows and daylight, gizmo moves selection.',mini_wall:'Length {0}m. In 2D drag whole or by endpoints.',mini_win:'In 2D drag the window — it slides along the wall and snaps to the nearest one.',mini_sun:'In 2D/3D drag the yellow point — light comes from it.',
+  card_wall:'wall',card_door:'door',card_window:'window',card_spot:'spot on',card_pcs:'lt.',
+  hint2d:'click — select · drag — move · RMB/Space — pan · wheel — zoom',hint2d_draw:'Draw walls: click — point, double-click / Esc — finish',hint3d:'click — select · gizmo — move · drag window/sun · LMB bg — orbit · wheel — zoom',
+  info:'{0} walls · {1} windows/doors · {2} lt. · {3} tracks · {4} obj.',prompt_pitch:'Pitch, mm:',err_drawfirst:'Draw walls first (2D).',err_noscene:'No saved scene.',err_parse:'Parse error: ',saved:'Saved ✓'
+}};
+function t(k,...a){let s=(T[lang]&&T[lang][k])||T.ru[k]||k;a.forEach((v,i)=>s=s.replace('{'+i+'}',v));return s;}
+function applyI18n(){document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));$('#lang').textContent=lang==='ru'?'EN':'RU';renderCards();fillEditor();updateInfo();setHint();}
+
+/* ================= autosave ================= */
+let saveTimer=null;
+function persistSoon(){clearTimeout(saveTimer);saveTimer=setTimeout(persist,300);}
+function persist(){try{localStorage.setItem('lightspot3',JSON.stringify({...S,nextId,_lang:lang,_ui:ui,_view:view,_mode:mode}));}catch(e){}}
 
 /* ================= MODEL ================= */
 let nextId=1;
@@ -181,7 +214,7 @@ function projOnWall(w,px,py){const dx=w.x2-w.x1,dy=w.y2-w.y1,L=Math.hypot(dx,dy)
 function nearestWall(px,py){let best=null;for(const w of S.walls){const r=projOnWall(w,px,py);if(!best||r.dist<best.dist)best={w,...r};}return best;}
 
 /* ================= dispatch ================= */
-function sync(struct=true){renderCards();updateInfo();if(mode==='3d'){if(struct)build3d();else layout3d();}else draw2d();}
+function sync(struct=true){renderCards();updateInfo();if(mode==='3d'){if(struct)build3d();else layout3d();}else draw2d();persistSoon();}
 
 /* ================= 2D ENGINE ================= */
 const cv2=$('#cv2d'), g2=cv2.getContext('2d');
@@ -311,7 +344,7 @@ window.addEventListener('mousemove',e=>{
   else if(drag.kind==='win'){const nw=nearestWall(wx,wy);if(nw){m.wallId=nw.w.id;m.pos=round(clamp(nw.pos,0,nw.len));}}
   draw2d();fillEditor();renderCards();
 });
-window.addEventListener('mouseup',()=>{drag=null;pan=null;});
+window.addEventListener('mouseup',()=>{if((drag||pan)&&mode==='2d')persistSoon();drag=null;pan=null;});
 cv2.addEventListener('contextmenu',e=>e.preventDefault());
 cv2.addEventListener('click',e=>{
   if(!drawMode)return;const r=cv2.getBoundingClientRect(),sx=e.clientX-r.left,sy=e.clientY-r.top;const[wx,wy]=s2w(sx,sy),sp=snap2d(wx,wy);
@@ -319,7 +352,7 @@ cv2.addEventListener('click',e=>{
   drawPrev=sp;sync(true);
 });
 cv2.addEventListener('dblclick',()=>{if(drawMode)endDraw();});
-cv2.addEventListener('wheel',e=>{e.preventDefault();const r=cv2.getBoundingClientRect(),sx=e.clientX-r.left,sy=e.clientY-r.top,[wx,wy]=s2w(sx,sy);const f=e.deltaY<0?1.12:1/1.12;view.scale=clamp(view.scale*f,8,300);view.panx=wx-sx/view.scale;view.pany=wy-sy/view.scale;draw2d();},{passive:false});
+cv2.addEventListener('wheel',e=>{e.preventDefault();const r=cv2.getBoundingClientRect(),sx=e.clientX-r.left,sy=e.clientY-r.top,[wx,wy]=s2w(sx,sy);const f=e.deltaY<0?1.12:1/1.12;view.scale=clamp(view.scale*f,8,300);view.panx=wx-sx/view.scale;view.pany=wy-sy/view.scale;draw2d();persistSoon();},{passive:false});
 window.addEventListener('keydown',e=>{
   if(e.code==='Space')space=true;
   if(e.key==='Escape'&&drawMode)endDraw();
@@ -336,7 +369,7 @@ const scene=new THREE.Scene();scene.background=new THREE.Color(0x0f1115);
 const camera=new THREE.PerspectiveCamera(50,1,0.05,400);
 const orbit=new OrbitControls(camera,cv);orbit.enableDamping=true;orbit.dampingFactor=0.08;
 const tc=new TransformControls(camera,renderer.domElement);tc.setSize(0.85);scene.add(tc);
-tc.addEventListener('dragging-changed',e=>{orbit.enabled=!e.value;if(!e.value&&sel&&sel.kind==='win')build3d();});
+tc.addEventListener('dragging-changed',e=>{orbit.enabled=!e.value;if(!e.value){if(sel&&sel.kind==='win')build3d();persistSoon();}});
 tc.addEventListener('objectChange',onGizmo3d);
 const V=(x,y,h)=>new THREE.Vector3(x,h,y);
 let root=new THREE.Group();scene.add(root);
@@ -433,7 +466,7 @@ function bindLightToTrack(L,tid){
 $('#addLight').onclick=()=>{const bb=bbox();const L=mkLight(bb.cx,bb.cy);S.lights.push(L);sync(true);select('light',L.id);};
 $('#addTrack').onclick=()=>{const bb=bbox();const t=mkTrack(bb.cx,bb.cy);S.tracks.push(t);sync(true);select('track',t.id);};
 $('#addObj').onclick=()=>{const bb=bbox();const o=mkObj(bb.cx-0.8,bb.cy-0.45);S.objs.push(o);sync(true);select('obj',o.id);};
-$('#addWin').onclick=()=>{if(!S.walls.length){showErr('Сначала нарисуй стены (2D).');return;}const w=mkWindow();S.windows.push(w);sync(true);select('win',w.id);};
+$('#addWin').onclick=()=>{if(!S.walls.length){showErr(t('err_drawfirst'));return;}const w=mkWindow();S.windows.push(w);sync(true);select('win',w.id);};
 $('#drawWall').onclick=()=>{if(mode!=='2d')setMode('2d');drawMode=!drawMode;drawPrev=null;$('#drawWall').classList.toggle('on',drawMode);if(drawMode){select(null);}setHint();draw2d();};
 function delEntity(kind,id){
   if(kind==='light')S.lights=S.lights.filter(x=>x.id!==id);
@@ -446,30 +479,30 @@ function delEntity(kind,id){
 function distribute(t,m,p){const fx=S.lights.filter(L=>L.trackId===t.id),k=fx.length;if(!k)return;let us=[];if(m==='pitch'){const span=(k-1)*p;for(let i=0;i<k;i++)us.push(-span/2+i*p);}else{if(k===1)us=[0];else for(let i=0;i<k;i++)us.push((i/(k-1)-0.5)*t.len);}fx.forEach((L,i)=>L.u=clamp(us[i],-t.len/2,t.len/2));sync(false);fillEditor();}
 
 function renderCards(){
-  const Wl=$('#c_walls');Wl.innerHTML='';S.walls.forEach((w,i)=>Wl.appendChild(card({...w,name:'стена '+(i+1),color:'#7e8aa0'},'wall',`${round(wallLen(w))}м`,true)));
-  const Wc=$('#c_wins');Wc.innerHTML='';for(const w of S.windows)Wc.appendChild(card({...w,color:w.kind==='door'?'#7fd08a':'#9fccff'},'win',`${w.kind==='door'?'дверь':'окно'} · ${w.width}×${w.height}м`,true));
-  const T=$('#c_tracks');T.innerHTML='';for(const t of S.tracks)T.appendChild(card(t,'track',`${t.len}м · ${S.lights.filter(l=>l.trackId===t.id).length} св.`,false));
-  const L=$('#c_lights');L.innerHTML='';for(const l of S.lights){const tr=l.trackId!=null?getTrack(l.trackId):null;L.appendChild(card(l,'light',(tr?`спот «${tr.name}»`:l.shape)+` · ${l.beam}°`,false));}
+  const Wl=$('#c_walls');Wl.innerHTML='';S.walls.forEach((w,i)=>Wl.appendChild(card({...w,name:t('card_wall')+' '+(i+1),color:'#7e8aa0'},'wall',`${round(wallLen(w))}м`,true)));
+  const Wc=$('#c_wins');Wc.innerHTML='';for(const w of S.windows)Wc.appendChild(card({...w,color:w.kind==='door'?'#7fd08a':'#9fccff'},'win',`${w.kind==='door'?t('card_door'):t('card_window')} · ${w.width}×${w.height}м`,true));
+  const Tc=$('#c_tracks');Tc.innerHTML='';for(const tr of S.tracks)Tc.appendChild(card(tr,'track',`${tr.len}м · ${S.lights.filter(l=>l.trackId===tr.id).length} ${t('card_pcs')}`,false));
+  const L=$('#c_lights');L.innerHTML='';for(const l of S.lights){const tr=l.trackId!=null?getTrack(l.trackId):null;L.appendChild(card(l,'light',(tr?`${t('card_spot')} «${tr.name}»`:l.shape)+` · ${l.beam}°`,false));}
   const O=$('#c_objs');O.innerHTML='';for(const o of S.objs)O.appendChild(card(o,'obj',`${o.w}×${o.d}×${o.h}м`,true));
 }
 function card(m,kind,meta,sq){const d=document.createElement('div');d.className='card'+(sel&&sel.kind===kind&&sel.id===m.id?' sel':'');d.innerHTML=`<div class="top"><span class="swatch${sq?' sq':''}" style="background:${m.color}"></span><span class="name">${m.name}</span><span class="x" data-del="1">×</span></div><div class="meta">${meta}</div>`;d.onclick=e=>{if(e.target.dataset.del){delEntity(kind,m.id);return;}select(kind,m.id);};return d;}
 
 function fillEditor(){
   const box=$('#editor');box.innerHTML='';
-  if(!sel){box.innerHTML='<div class="mini">2D: рисуй стены, ставь окна/двери/мебель, тащи мышью. 3D: тени и дневной свет, gizmo двигает выбранное.</div>';return;}
+  if(!sel){box.innerHTML=`<div class="mini">${t('hint_empty')}</div>`;return;}
   const m=findModel(sel.kind,sel.id);if(!m){box.innerHTML='';return;}
   const rows=[],txt=(l,k)=>rows.push(F(l,'text',m[k],v=>{m[k]=v;commit(false);})),col=(l,k)=>rows.push(FC(l,m[k],v=>{m[k]=v;commit(true);})),num=(l,k,st,struct,fn)=>rows.push(F(l,'number',m[k],v=>{m[k]=fn?fn(parseFloat(v)):parseFloat(v);commit(struct);},st)),rng=(l,k,a,b)=>rows.push(FR(l,m[k],a,b,v=>{m[k]=v;commit(true);}));
-  if(sel.kind==='light'){const tr=m.trackId!=null?getTrack(m.trackId):null;rows.push(H('Светильник'+(tr?` · «${tr.name}»`:'')));txt('Имя','name');col('Цвет','color');
-    if(S.tracks.length)rows.push(FS('Шина',['',...S.tracks.map(t=>String(t.id))],['— не на шине —',...S.tracks.map(t=>t.name)],m.trackId==null?'':String(m.trackId),v=>{bindLightToTrack(m,v===''?null:parseInt(v));commit(true);fillEditor();}));
-    if(tr){num('Смещение u, м','u',0.05,false,v=>clamp(v,-tr.len/2,tr.len/2));}
-    else{rows.push(FS('Форма',['point','line','rect'],['Точечный','Линейный','Панель'],m.shape,v=>{m.shape=v;commit(true);fillEditor();}));num('X, м','x',0.1,false);num('Y, м','y',0.1,false);num('Высота, м','mh',0.1,false);if(m.shape!=='point')num('Длина, м','len',0.05,true);if(m.shape==='rect'){num('Ширина, м','wid',0.05,true);num('Диодов вдоль','n',1,true);num('Поперёк','n2',1,true);}if(m.shape==='line')num('Кол-во','n',1,true);}
-    rng('Beam°','beam',1,170);rng('Field°','field',1,178);rng('Наклон β°','tilt',0,80);rng('Азимут°','az',0,360);}
-  else if(sel.kind==='track'){rows.push(H('Шина'));txt('Имя','name');col('Цвет','color');num('X, м','x',0.1,false);num('Y, м','y',0.1,false);num('Длина, м','len',0.1,true,v=>Math.max(0.1,v));num('Высота, м','mh',0.1,false);rng('Поворот°','rot',0,180);rows.push(B('+ светильник на шину',()=>{const L=mkLight(m.x,m.y);L.trackId=m.id;L.u=0;L.shape='point';S.lights.push(L);sync(true);select('light',L.id);},true));rows.push(BP('Распределить',()=>distribute(m,'even'),'По шагу…',()=>{const v=prompt('Шаг, мм:',300);if(v==null)return;distribute(m,'pitch',Math.max(1,parseFloat(v)||1)/1000);}));}
-  else if(sel.kind==='obj'){rows.push(H('Объект'));txt('Имя','name');col('Цвет','color');num('X, м','x',0.1,false);num('Y, м','y',0.1,false);num('Ширина, м','w',0.1,true);num('Глубина, м','d',0.1,true);num('Высота, м','h',0.05,true);num('Низ над полом, м','base',0.05,true,v=>Math.max(0,v));}
-  else if(sel.kind==='wall'){rows.push(H('Стена'));num('X1','x1',0.1,true);num('Y1','y1',0.1,true);num('X2','x2',0.1,true);num('Y2','y2',0.1,true);rows.push(M(`Длина ${round(wallLen(m))}м. В 2D тащи целиком или за концы.`));}
-  else if(sel.kind==='win'){rows.push(H('Окно / дверь'));txt('Имя','name');rows.push(FS('Тип',['window','door'],['Окно','Дверь (в пол)'],m.kind,v=>{m.kind=v;if(v==='door')m.sill=0;commit(true);fillEditor();}));rows.push(FS('Стена',S.walls.map(w=>w.id),S.walls.map((w,i)=>`стена ${i+1}`),m.wallId,v=>{m.wallId=parseInt(v);const w=getWall(m.wallId);m.pos=clamp(m.pos,0,wallLen(w));commit(true);}));num('Позиция, м','pos',0.1,true,v=>{const w=getWall(m.wallId);return clamp(v,0,w?wallLen(w):v);});num('Ширина, м','width',0.1,true,v=>Math.max(0.1,v));if(m.kind!=='door')num('Подоконник, м','sill',0.05,true,v=>Math.max(0,v));num('Высота проёма, м','height',0.05,true,v=>Math.max(0.1,v));rows.push(M('В 2D тащи окно — скользит по стене и прыгает на ближайшую.'));}
-  else if(sel.kind==='sun'){rows.push(H('Точка солнца'));num('X, м','x',0.1,false);num('Y, м','y',0.1,false);num('Высота, м','height',0.1,false,v=>Math.max(0.5,v));rows.push(M('В 2D/3D тащи жёлтую точку — направление света от неё.'));}
-  if(sel.kind!=='sun')rows.push(B('Удалить',()=>delEntity(sel.kind,sel.id),false,true));
+  if(sel.kind==='light'){const tr=m.trackId!=null?getTrack(m.trackId):null;rows.push(H(t('ed_light')+(tr?` · «${tr.name}»`:'')));txt(t('f_name'),'name');col(t('f_color'),'color');
+    if(S.tracks.length)rows.push(FS(t('f_track'),['',...S.tracks.map(x=>String(x.id))],[t('track_none'),...S.tracks.map(x=>x.name)],m.trackId==null?'':String(m.trackId),v=>{bindLightToTrack(m,v===''?null:parseInt(v));commit(true);fillEditor();}));
+    if(tr){num(t('f_u'),'u',0.05,false,v=>clamp(v,-tr.len/2,tr.len/2));}
+    else{rows.push(FS(t('f_shape'),['point','line','rect'],[t('sh_point'),t('sh_line'),t('sh_rect')],m.shape,v=>{m.shape=v;commit(true);fillEditor();}));num(t('f_x'),'x',0.1,false);num(t('f_y'),'y',0.1,false);num(t('f_height'),'mh',0.1,false);if(m.shape!=='point')num(t('f_len'),'len',0.05,true);if(m.shape==='rect'){num(t('f_width'),'wid',0.05,true);num(t('f_n_along'),'n',1,true);num(t('f_n_across'),'n2',1,true);}if(m.shape==='line')num(t('f_count'),'n',1,true);}
+    rng(t('f_beam'),'beam',1,170);rng(t('f_field'),'field',1,178);rng(t('f_tilt'),'tilt',0,80);rng(t('f_az'),'az',0,360);}
+  else if(sel.kind==='track'){rows.push(H(t('grp_tracks')));txt(t('f_name'),'name');col(t('f_color'),'color');num(t('f_x'),'x',0.1,false);num(t('f_y'),'y',0.1,false);num(t('f_len'),'len',0.1,true,v=>Math.max(0.1,v));num(t('f_height'),'mh',0.1,false);rng(t('f_rot'),'rot',0,180);rows.push(B(t('btn_addfix'),()=>{const L=mkLight(m.x,m.y);L.trackId=m.id;L.u=0;L.shape='point';S.lights.push(L);sync(true);select('light',L.id);},true));rows.push(BP(t('btn_distrib'),()=>distribute(m,'even'),t('btn_pitch'),()=>{const v=prompt(t('prompt_pitch'),300);if(v==null)return;distribute(m,'pitch',Math.max(1,parseFloat(v)||1)/1000);}));}
+  else if(sel.kind==='obj'){rows.push(H(t('ed_obj')));txt(t('f_name'),'name');col(t('f_color'),'color');num(t('f_x'),'x',0.1,false);num(t('f_y'),'y',0.1,false);num(t('f_width'),'w',0.1,true);num(t('f_depth'),'d',0.1,true);num(t('f_height'),'h',0.05,true);num(t('f_base'),'base',0.05,true,v=>Math.max(0,v));}
+  else if(sel.kind==='wall'){rows.push(H(t('ed_wall')));num('X1','x1',0.1,true);num('Y1','y1',0.1,true);num('X2','x2',0.1,true);num('Y2','y2',0.1,true);rows.push(M(t('mini_wall',round(wallLen(m)))));}
+  else if(sel.kind==='win'){rows.push(H(t('ed_win')));txt(t('f_name'),'name');rows.push(FS(t('f_type'),['window','door'],[t('ty_window'),t('ty_door')],m.kind,v=>{m.kind=v;if(v==='door')m.sill=0;commit(true);fillEditor();}));rows.push(FS(t('ed_wall'),S.walls.map(w=>w.id),S.walls.map((w,i)=>t('card_wall')+' '+(i+1)),m.wallId,v=>{m.wallId=parseInt(v);const w=getWall(m.wallId);m.pos=clamp(m.pos,0,wallLen(w));commit(true);}));num(t('f_pos'),'pos',0.1,true,v=>{const w=getWall(m.wallId);return clamp(v,0,w?wallLen(w):v);});num(t('f_width'),'width',0.1,true,v=>Math.max(0.1,v));if(m.kind!=='door')num(t('f_sill'),'sill',0.05,true,v=>Math.max(0,v));num(t('f_openh'),'height',0.05,true,v=>Math.max(0.1,v));rows.push(M(t('mini_win')));}
+  else if(sel.kind==='sun'){rows.push(H(t('ed_sun')));num(t('f_x'),'x',0.1,false);num(t('f_y'),'y',0.1,false);num(t('f_sunheight'),'height',0.1,false,v=>Math.max(0.5,v));rows.push(M(t('mini_sun')));}
+  if(sel.kind!=='sun')rows.push(B(t('btn_del'),()=>delEntity(sel.kind,sel.id),false,true));
   rows.forEach(r=>box.appendChild(r));
 }
 function H(t){const d=document.createElement('div');d.className='grp';d.style.margin='0 0 8px';d.innerHTML=`<label>${t}</label>`;return d;}
@@ -488,10 +521,11 @@ function setMode(m){
   cv2.style.display=m==='2d'?'block':'none';cv.style.display=m==='3d'?'block':'none';
   $('#gizmosw').style.display=m==='3d'?'flex':'none';
   if(m==='3d'){if(drawMode)endDraw();build3d();fit3d();}else draw2d();
-  setHint();
+  setHint();persistSoon();
 }
 $('#m2d').onclick=()=>setMode('2d');$('#m3d').onclick=()=>setMode('3d');
-function setHint(){$('#hint').innerHTML=mode==='2d'?(drawMode?'Рисование стен: клик — точка, двойной клик / Esc — закончить':'клик — выбрать · тащить — двигать · ПКМ/Space — панорама · колесо — зум'):'клик — выбрать · gizmo — двигать · окно/солнце тащи · ЛКМ-фон — вращать · колесо — зум';}
+$('#lang').onclick=()=>{lang=lang==='ru'?'en':'ru';applyI18n();if(mode==='2d')draw2d();persistSoon();};
+function setHint(){$('#hint').textContent=mode==='2d'?(drawMode?t('hint2d_draw'):t('hint2d')):t('hint3d');}
 
 /* ================= scene inputs / view controls ================= */
 $('#rc').oninput=e=>{S.room.ceil=Math.max(0.5,+e.target.value);sync(true);};
@@ -510,28 +544,32 @@ function syncSun(){$('#d_on').checked=S.sun.on;$('#d_sun').value=S.sun.intensity
 
 /* ================= save/load/fit ================= */
 $('#demo').onclick=()=>{S=demoScene();sel=null;tc.detach();fitted=false;syncRoom();syncSun();fit2d();sync(true);};
-$('#save').onclick=()=>{localStorage.setItem('lightspot3',JSON.stringify({...S,nextId}));const b=$('#save');b.textContent='Сохранено ✓';setTimeout(()=>b.textContent='Сохранить',1200);};
-$('#load').onclick=()=>{const raw=localStorage.getItem('lightspot3')||localStorage.getItem('lightspot2');if(!raw){showErr('Нет сохранённой сцены.');return;}try{loadData(JSON.parse(raw));}catch(e){showErr('Не разобрать: '+e.message);}};
-function loadData(d){
+$('#save').onclick=()=>{persist();const b=$('#save');b.textContent=t('saved');setTimeout(()=>b.textContent=t('btn_save'),1200);};
+$('#load').onclick=()=>{const raw=localStorage.getItem('lightspot3')||localStorage.getItem('lightspot2');if(!raw){showErr(t('err_noscene'));return;}try{loadData(JSON.parse(raw));}catch(e){showErr(t('err_parse')+e.message);}};
+function applyScene(d){
   S={room:d.room||{grid:0.5,ceil:2.7},walls:d.walls||[],windows:(d.windows||[]).map(normWin),tracks:d.tracks||[],lights:(d.lights||[]).map(normLight),objs:d.objs||[],sun:{...demoScene().sun,...(d.sun||{})}};
   if(!S.walls.length&&d.room&&d.room.w){const W=d.room.w,Hh=d.room.h;S.walls=[{id:1001,x1:0,y1:0,x2:W,y2:0},{id:1002,x1:W,y1:0,x2:W,y2:Hh},{id:1003,x1:W,y1:Hh,x2:0,y2:Hh},{id:1004,x1:0,y1:Hh,x2:0,y2:0}];}
   if(!S.room.grid)S.room.grid=0.5;if(!S.room.ceil)S.room.ceil=2.7;
-  nextId=Math.max(1,...[...S.walls,...S.windows,...S.tracks,...S.lights,...S.objs].map(x=>x.id||0))+1;
-  sel=null;tc.detach();fitted=false;clearErr();syncRoom();syncSun();fit2d();sync(true);
+  nextId=d.nextId||Math.max(1,...[...S.walls,...S.windows,...S.tracks,...S.lights,...S.objs].map(x=>x.id||0))+1;
+  if(d._lang==='ru'||d._lang==='en')lang=d._lang;
+  if(d._ui)Object.assign(ui,d._ui);
 }
+function loadData(d){applyScene(d);if(d._view)Object.assign(view,d._view);sel=null;tc.detach();fitted=false;clearErr();syncRoom();syncSun();applyI18n();if(!d._view)fit2d();sync(true);}
 function normLight(l){return{shape:'point',beam:30,field:50,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.7,x:0,y:0,...l};}
 function normWin(w){return{kind:'window',sill:0.9,height:1.4,width:1.6,pos:1,...w};}
 function fit2d(){const bb=bbox(),W=cv2.clientWidth||800,Hh=cv2.clientHeight||600,pad=1.2;const s=Math.min(W/((bb.maxx-bb.minx)+2*pad),Hh/((bb.maxy-bb.miny)+2*pad));view.scale=clamp(s,8,300);view.panx=bb.minx-(W/view.scale-(bb.maxx-bb.minx))/2;view.pany=bb.miny-(Hh/view.scale-(bb.maxy-bb.miny))/2;}
 function fit3d(){const bb=bbox();orbit.target.set(bb.cx,0.6,bb.cy);if(!fitted){const d=bb.size||8;camera.position.set(bb.cx+d*0.85,S.room.ceil+d*0.9,bb.cy+d*1.1);fitted=true;}orbit.update();}
 $('#fit').onclick=()=>{if(mode==='2d'){fit2d();draw2d();}else{fitted=false;fit3d();}};
-function updateInfo(){$('#info').innerHTML=`${S.walls.length} стен · ${S.windows.length} окон/дверей · ${S.lights.length} св. · ${S.tracks.length} шин · ${S.objs.length} об.`;}
+function updateInfo(){$('#info').textContent=t('info',S.walls.length,S.windows.length,S.lights.length,S.tracks.length,S.objs.length);}
 
 /* ================= loop / resize ================= */
 function resize(){const r=$('#stage').getBoundingClientRect();renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix();resize2d();if(mode==='2d')draw2d();}
 window.addEventListener('resize',resize);
 function tick(){if(mode==='3d'){orbit.update();renderer.render(scene,camera);}requestAnimationFrame(tick);}
 
-syncRoom();syncSun();resize();fit2d();renderCards();fillEditor();updateInfo();setMode('2d');tick();
+let bootMode='2d', restored=false;
+try{const raw=localStorage.getItem('lightspot3');if(raw){const d=JSON.parse(raw);if(d&&d.room){applyScene(d);if(d._view){Object.assign(view,d._view);restored=true;}if(d._mode)bootMode=d._mode;}}}catch(e){}
+syncRoom();syncSun();resize();if(!restored)fit2d();applyI18n();renderCards();fillEditor();updateInfo();setMode(bootMode);tick();
 </script>
 </body>
 </html>
