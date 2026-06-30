@@ -260,12 +260,12 @@ function demoScene(){nextId=400;return{
     _O(99,'шкаф прих.',8.4,4.1,1.1,0.6,2.4,0,'#8f9aac'),
     _O(100,'стол',7.5,11.4,1.1,1.1,0.75,0,'#a8b0bd')
   ],
-  sun:{x:5,y:-6,height:9,on:true,intensity:3.2,sky:0.5,color:'#fff3df',soft:8,winlight:4.5},
+  sun:{x:5,y:-6,height:9,on:true,intensity:3.2,sky:0.3,color:'#fff3df',soft:8,winlight:4.5},
   layers:[{id:90,name:'Планировка',visible:true},{id:91,name:'Мебель',visible:true},{id:92,name:'Свет',visible:true}],activeLayer:91
 };}
 let S=demoScene();
 let sel=null, mode='2d';
-const ui={intensity:10,ambient:0.18,soft:4,ceiling:false,helpers:false,gizmo:true,quality:'med'};
+const ui={intensity:10,ambient:0.1,soft:4,ceiling:false,helpers:false,gizmo:true,quality:'med'};
 
 const getTrack=id=>S.tracks.find(t=>t.id===id);
 const getWall=id=>S.walls.find(w=>w.id===id);
@@ -457,7 +457,7 @@ function endDraw(){drawMode=false;drawPrev=null;drawCur=null;$('#drawWall').clas
 /* ================= 3D ENGINE ================= */
 const cv=$('#cv');
 const renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true});
-renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.VSMShadowMap;
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x0f1115);
 const camera=new THREE.PerspectiveCamera(50,1,0.05,400);
 const orbit=new OrbitControls(camera,cv);orbit.enableDamping=true;orbit.dampingFactor=0.08;
@@ -468,7 +468,7 @@ const V=(x,y,h)=>new THREE.Vector3(x,h,y);
 let root=new THREE.Group();scene.add(root);
 const groups=new Map();const selectables=[];let sunLight=null,sunMarker=null,fitted=false;
 let curMax=4,curMS=1024,curBlur=12,shadowCount=0;   // текущий бюджет/качество теней
-function qcfg(){return ({low:{sh:false,max:0,ms:512,blur:6,pr:1},med:{sh:true,max:4,ms:1024,blur:12,pr:1.5},high:{sh:true,max:10,ms:2048,blur:24,pr:2}})[ui.quality||'med'];}
+function qcfg(){return ({low:{sh:false,max:0,ms:512,blur:6,pr:1},med:{sh:true,max:8,ms:1024,blur:12,pr:1.5},high:{sh:true,max:18,ms:2048,blur:24,pr:2}})[ui.quality||'med'];}
 const ray=new THREE.Raycaster(),ndc=new THREE.Vector2(),planeY0=new THREE.Plane(new THREE.Vector3(0,1,0),0);
 function mat(c,o={}){return new THREE.MeshStandardMaterial({color:c,roughness:0.9,metalness:0,...o});}
 function tag(g,kind,id){g.userData={kind,id};g.traverse(m=>{if(m.isMesh){m.userData.kind=kind;m.userData.id=id;selectables.push(m);}});}
@@ -507,12 +507,14 @@ function buildLight(L){
   const g=new THREE.Group();const offs=emitterOffsets3D(L),col=new THREE.Color(L.color||'#ffd27a').getHex();
   const beam=L.beam||30,field=Math.max(beam,L.field||50),inten=ui.intensity/Math.sqrt(offs.length);
   const b=(L.tilt||0)*D2R,az=(L.az||0)*D2R,yS=L.dir==='up'?1:-1,dir=new THREE.Vector3(Math.sin(b)*Math.cos(az),yS*Math.cos(b),Math.sin(b)*Math.sin(az)).normalize();
+  if(L.shape==='chandelier'){ // люстра: один омни-источник в центре (тень → стены перекрывают свет) + лампочки-сферы
+    const pl=new THREE.PointLight(col,Math.max(ui.intensity*0.9,1),0,0);pl.position.set(0,0,0);
+    pl.castShadow=shadowCount<curMax;if(pl.castShadow){shadowCount++;pl.shadow.mapSize.set(Math.min(1024,curMS),Math.min(1024,curMS));pl.shadow.bias=-0.002;pl.shadow.camera.near=0.05;pl.shadow.camera.far=Math.max(8,bbox().size);}
+    g.add(pl);
+    for(const[ox,oy]of offs){const hb=new THREE.Mesh(new THREE.SphereGeometry(0.05,10,8),new THREE.MeshBasicMaterial({color:col}));hb.position.set(ox,0,oy);g.add(hb);}
+    tag(g,'light',L.id);root.add(g);groups.set(L.id,g);return;
+  }
   for(const[ox,oy]of offs){
-    if(L.shape==='chandelier'){ // лампочки люстры — сферический свет (омни), без направленного луча
-      const pl=new THREE.PointLight(col,inten*1.25,0,0);pl.position.set(ox,0,oy);pl.castShadow=false;g.add(pl);
-      const hb=new THREE.Mesh(new THREE.SphereGeometry(0.05,10,8),new THREE.MeshBasicMaterial({color:col}));hb.position.set(ox,0,oy);g.add(hb);
-      continue;
-    }
     const sl=new THREE.SpotLight(col,inten);sl.position.set(ox,0,oy);sl.angle=Math.max(0.02,(field/2)*D2R);sl.penumbra=clamp(1-beam/field,0,1);sl.decay=0;sl.distance=0;sl.castShadow=shadowCount<curMax;if(sl.castShadow)shadowCount++;sl.shadow.mapSize.set(curMS,curMS);sl.shadow.radius=Math.max(1,ui.soft);sl.shadow.blurSamples=curBlur;sl.shadow.bias=-0.0006;sl.shadow.camera.near=0.08;sl.shadow.camera.far=12;const tgt=new THREE.Object3D();tgt.position.set(ox+dir.x*5,dir.y*5,oy+dir.z*5);g.add(tgt);sl.target=tgt;g.add(sl);const h=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.05,0.07,12),mat(0x15171c,{metalness:0.4,roughness:0.6}));h.position.set(ox,0,oy);g.add(h);if(ui.helpers){const len=3,rad=Math.tan((field/2)*D2R)*len;const cone=new THREE.Mesh(new THREE.ConeGeometry(rad,len,24,1,true),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.06,side:THREE.DoubleSide,depthWrite:false}));const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,-1,0),dir);cone.position.set(ox,0,oy);cone.quaternion.copy(q);cone.translateY(-len/2);g.add(cone);}}
   tag(g,'light',L.id);root.add(g);groups.set(L.id,g);
 }
