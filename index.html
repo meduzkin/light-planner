@@ -83,7 +83,9 @@
           <button id="demo" data-i18n="btn_demo">Демо</button>
           <button id="fit" data-i18n="btn_fit">По размеру</button>
         </div>
+        <div class="btnrow"><button id="export" data-i18n="btn_export">Экспорт</button><button id="import" data-i18n="btn_import">Импорт</button></div>
         <div class="btnrow"><button id="reset" class="danger" data-i18n="btn_reset">Сбросить всё</button></div>
+        <input id="importFile" type="file" accept="application/json,.json" style="display:none">
       </div>
 
       <div class="grp">
@@ -167,7 +169,7 @@ const T={ru:{
   card_wall:'стена',card_door:'дверь',card_window:'окно',card_spot:'спот',card_pcs:'св.',
   hint2d:'клик — выбрать · тащить — двигать · ПКМ/Space — панорама · колесо — зум',hint2d_draw:'Рисование: клик — точка (привязка 0.1м, Shift — свободно, прилипание к концам стен) · двойной клик / Esc — закончить',hint3d:'клик — выбрать · gizmo — двигать · окно/солнце тащи · ЛКМ-фон — вращать · колесо — зум',
   info:'{0} стен · {1} окон/дверей · {2} св. · {3} шин · {4} об.',prompt_pitch:'Шаг, мм:',err_drawfirst:'Сначала нарисуй стены (2D).',err_noscene:'Нет сохранённой сцены.',err_parse:'Не разобрать: ',saved:'Сохранено ✓',
-  grp_layers:'Слои',btn_layer:'+ Слой',btn_reset:'Сбросить всё',f_layer:'Слой',layer_name:'Слой',confirm_reset:'Сбросить всю сцену и очистить сохранение?',
+  grp_layers:'Слои',btn_layer:'+ Слой',btn_reset:'Сбросить всё',f_layer:'Слой',layer_name:'Слой',confirm_reset:'Сбросить всю сцену и очистить сохранение?',btn_export:'Экспорт',btn_import:'Импорт',
   sh_chand:'Люстра (кластер)',f_bulbs:'Лампочек',f_radius:'Радиус, м',f_facing:'Направление',fac_down:'Вниз',fac_up:'Вверх',
   q_label:'Детализация',q_low:'Схематично',q_med:'Средне',q_high:'Реалистично'
 },en:{
@@ -181,7 +183,7 @@ const T={ru:{
   card_wall:'wall',card_door:'door',card_window:'window',card_spot:'spot on',card_pcs:'lt.',
   hint2d:'click — select · drag — move · RMB/Space — pan · wheel — zoom',hint2d_draw:'Draw: click — point (snap 0.1m, Shift — free, snaps to wall ends) · double-click / Esc — finish',hint3d:'click — select · gizmo — move · drag window/sun · LMB bg — orbit · wheel — zoom',
   info:'{0} walls · {1} windows/doors · {2} lt. · {3} tracks · {4} obj.',prompt_pitch:'Pitch, mm:',err_drawfirst:'Draw walls first (2D).',err_noscene:'No saved scene.',err_parse:'Parse error: ',saved:'Saved ✓',
-  grp_layers:'Layers',btn_layer:'+ Layer',btn_reset:'Reset all',f_layer:'Layer',layer_name:'Layer',confirm_reset:'Reset the whole scene and clear saved data?',
+  grp_layers:'Layers',btn_layer:'+ Layer',btn_reset:'Reset all',f_layer:'Layer',layer_name:'Layer',confirm_reset:'Reset the whole scene and clear saved data?',btn_export:'Export',btn_import:'Import',
   sh_chand:'Chandelier (cluster)',f_bulbs:'Bulbs',f_radius:'Radius, m',f_facing:'Facing',fac_down:'Down',fac_up:'Up',
   q_label:'Detail',q_low:'Schematic',q_med:'Medium',q_high:'Realistic'
 }};
@@ -673,6 +675,9 @@ function syncSun(){$('#d_on').checked=S.sun.on;$('#d_sun').value=S.sun.intensity
 
 /* ================= save/load/fit ================= */
 $('#demo').onclick=()=>{S=demoScene();normalizeLayers();sel=null;tc.detach();fitted=false;syncRoom();syncSun();fit2d();sync(true);};
+$('#export').onclick=()=>{const blob=new Blob([JSON.stringify({...S,nextId,_lang:lang,_ui:ui},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='light-plan.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);};
+$('#import').onclick=()=>$('#importFile').click();
+$('#importFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{loadData(JSON.parse(rd.result));}catch(err){showErr(t('err_parse')+err.message);}};rd.readAsText(f);e.target.value='';};
 $('#save').onclick=()=>{persist();const b=$('#save');b.textContent=t('saved');setTimeout(()=>b.textContent=t('btn_save'),1200);};
 $('#load').onclick=()=>{const raw=localStorage.getItem(SKEY)||localStorage.getItem('lightspot3')||localStorage.getItem('lightspot2');if(!raw){showErr(t('err_noscene'));return;}try{loadData(JSON.parse(raw));}catch(e){showErr(t('err_parse')+e.message);}};
 function applyScene(d){
