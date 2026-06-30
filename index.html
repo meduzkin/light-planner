@@ -68,22 +68,35 @@
     <h1>Light Spot Planner <small data-i18n="subtitle">· 2D/3D</small><button id="lang" style="float:right;padding:3px 8px;font-size:11px">EN</button></h1>
     <div class="scroll">
       <div class="grp">
+        <label data-i18n="grp_add">Добавить</label>
         <div class="btnrow">
           <button id="drawWall" data-i18n="btn_draw">✏ Рисовать стены</button>
-          <button id="addWin" data-i18n="btn_win">+ Окно/дверь</button>
+          <button class="obj" id="addObj" data-i18n="btn_obj">+ Объект</button>
+        </div>
+        <div class="btnrow">
+          <button id="addWin" data-i18n="btn_win">+ Окно</button>
+          <button id="addDoor" data-i18n="btn_door">+ Дверь</button>
         </div>
         <div class="btnrow">
           <button class="primary" id="addLight" data-i18n="btn_light">+ Светильник</button>
           <button id="addTrack" data-i18n="btn_track">+ Шина</button>
-          <button class="obj" id="addObj" data-i18n="btn_obj">+ Объект</button>
         </div>
+      </div>
+
+      <div class="grp">
+        <label data-i18n="grp_file">Файл</label>
         <div class="btnrow">
           <button id="load" data-i18n="btn_load">Загрузить</button>
           <button id="save" data-i18n="btn_save">Сохранить</button>
-          <button id="demo" data-i18n="btn_demo">Демо</button>
+        </div>
+        <div class="btnrow">
+          <button id="export" data-i18n="btn_export">Экспорт</button>
+          <button id="import" data-i18n="btn_import">Импорт</button>
+        </div>
+        <div class="btnrow">
+          <button id="demo" data-i18n="btn_demo">Загрузить пример</button>
           <button id="fit" data-i18n="btn_fit">По размеру</button>
         </div>
-        <div class="btnrow"><button id="export" data-i18n="btn_export">Экспорт</button><button id="import" data-i18n="btn_import">Импорт</button></div>
         <div class="btnrow"><button id="reset" class="danger" data-i18n="btn_reset">Сбросить всё</button></div>
         <input id="importFile" type="file" accept="application/json,.json" style="display:none">
       </div>
@@ -157,9 +170,9 @@ const round=v=>Math.round(v*100)/100;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
 /* ================= i18n ================= */
-let lang='ru';
+let lang='en';
 const T={ru:{
-  subtitle:'· 2D/3D',btn_draw:'✏ Рисовать стены',btn_win:'+ Окно/дверь',btn_light:'+ Светильник',btn_track:'+ Шина',btn_obj:'+ Объект',btn_load:'Загрузить',btn_save:'Сохранить',btn_demo:'Демо',btn_fit:'По размеру',
+  subtitle:'· 2D/3D',grp_add:'Добавить',grp_file:'Файл',btn_draw:'✏ Рисовать стены',btn_win:'+ Окно',btn_door:'+ Дверь',btn_light:'+ Светильник',btn_track:'+ Шина',btn_obj:'+ Объект',btn_load:'Загрузить',btn_save:'Сохранить',btn_demo:'Загрузить пример',btn_fit:'По размеру',
   grp_params:'Параметры',lbl_ceil:'Потолок, м',lbl_grid:'Сетка, м',grp_walls:'Стены',grp_wins:'Окна / двери',grp_tracks:'Шины',grp_lights:'Светильники',grp_objs:'Объекты',
   grp_sun:'Солнце / дневной свет (3D)',sun_on:'Включить',sun_bright:'Яркость',sun_soft:'Мягкость',sun_winlight:'Подсветка окон',sun_sky:'Свет неба',sun_colorlbl:'Цвет',
   grp_lt:'Светильники: свет/тени (3D)',lt_bright:'Яркость',lt_fill:'Заполняющий',lt_shadowsoft:'Мягкость теней',t_ceiling:'Видимый потолок',t_helpers:'Конусы лучей',m2d:'2D план',m3d:'3D вид',g_move:'Перемещение',g_off:'Обзор',
@@ -169,11 +182,11 @@ const T={ru:{
   card_wall:'стена',card_door:'дверь',card_window:'окно',card_spot:'спот',card_pcs:'св.',
   hint2d:'клик — выбрать · тащить — двигать · ПКМ/Space — панорама · колесо — зум',hint2d_draw:'Рисование: клик — точка (привязка 0.1м, Shift — свободно, прилипание к концам стен) · двойной клик / Esc — закончить',hint3d:'клик — выбрать · gizmo — двигать · окно/солнце тащи · ЛКМ-фон — вращать · колесо — зум',
   info:'{0} стен · {1} окон/дверей · {2} св. · {3} шин · {4} об.',prompt_pitch:'Шаг, мм:',err_drawfirst:'Сначала нарисуй стены (2D).',err_noscene:'Нет сохранённой сцены.',err_parse:'Не разобрать: ',saved:'Сохранено ✓',
-  grp_layers:'Слои',btn_layer:'+ Слой',btn_reset:'Сбросить всё',f_layer:'Слой',layer_name:'Слой',confirm_reset:'Сбросить всю сцену и очистить сохранение?',btn_export:'Экспорт',btn_import:'Импорт',btn_dup:'Дублировать',
-  sh_chand:'Люстра (кластер)',f_bulbs:'Лампочек',f_radius:'Радиус, м',f_facing:'Направление',fac_down:'Вниз',fac_up:'Вверх',
+  grp_layers:'Слои',btn_layer:'+ Слой',btn_reset:'Сбросить всё',f_layer:'Слой',layer_name:'Слой',confirm_reset:'Очистить проект (пустая сцена)?',btn_export:'Экспорт',btn_import:'Импорт',btn_dup:'Дублировать',
+  sh_chand:'Люстра (кластер)',sh_sconce:'Бра (на стену)',f_bulbs:'Лампочек',f_radius:'Радиус, м',f_facing:'Направление',fac_down:'Вниз',fac_up:'Вверх',f_power:'Мощность, Вт',
   q_label:'Детализация',q_low:'Схематично',q_med:'Средне',q_high:'Реалистично'
 },en:{
-  subtitle:'· 2D/3D',btn_draw:'✏ Draw walls',btn_win:'+ Window/door',btn_light:'+ Light',btn_track:'+ Track',btn_obj:'+ Object',btn_load:'Load',btn_save:'Save',btn_demo:'Demo',btn_fit:'Fit',
+  subtitle:'· 2D/3D',grp_add:'Add',grp_file:'File',btn_draw:'✏ Draw walls',btn_win:'+ Window',btn_door:'+ Door',btn_light:'+ Light',btn_track:'+ Track',btn_obj:'+ Object',btn_load:'Load',btn_save:'Save',btn_demo:'Load example',btn_fit:'Fit',
   grp_params:'Parameters',lbl_ceil:'Ceiling, m',lbl_grid:'Grid, m',grp_walls:'Walls',grp_wins:'Windows / doors',grp_tracks:'Tracks',grp_lights:'Lights',grp_objs:'Objects',
   grp_sun:'Sun / daylight (3D)',sun_on:'Enable',sun_bright:'Brightness',sun_soft:'Softness',sun_winlight:'Window fill',sun_sky:'Sky light',sun_colorlbl:'Color',
   grp_lt:'Lights: light/shadows (3D)',lt_bright:'Brightness',lt_fill:'Ambient',lt_shadowsoft:'Shadow softness',t_ceiling:'Show ceiling',t_helpers:'Beam cones',m2d:'2D plan',m3d:'3D view',g_move:'Move',g_off:'Orbit',
@@ -183,8 +196,8 @@ const T={ru:{
   card_wall:'wall',card_door:'door',card_window:'window',card_spot:'spot on',card_pcs:'lt.',
   hint2d:'click — select · drag — move · RMB/Space — pan · wheel — zoom',hint2d_draw:'Draw: click — point (snap 0.1m, Shift — free, snaps to wall ends) · double-click / Esc — finish',hint3d:'click — select · gizmo — move · drag window/sun · LMB bg — orbit · wheel — zoom',
   info:'{0} walls · {1} windows/doors · {2} lt. · {3} tracks · {4} obj.',prompt_pitch:'Pitch, mm:',err_drawfirst:'Draw walls first (2D).',err_noscene:'No saved scene.',err_parse:'Parse error: ',saved:'Saved ✓',
-  grp_layers:'Layers',btn_layer:'+ Layer',btn_reset:'Reset all',f_layer:'Layer',layer_name:'Layer',confirm_reset:'Reset the whole scene and clear saved data?',btn_export:'Export',btn_import:'Import',btn_dup:'Duplicate',
-  sh_chand:'Chandelier (cluster)',f_bulbs:'Bulbs',f_radius:'Radius, m',f_facing:'Facing',fac_down:'Down',fac_up:'Up',
+  grp_layers:'Layers',btn_layer:'+ Layer',btn_reset:'Reset all',f_layer:'Layer',layer_name:'Layer',confirm_reset:'Clear project (empty scene)?',btn_export:'Export',btn_import:'Import',btn_dup:'Duplicate',
+  sh_chand:'Chandelier (cluster)',sh_sconce:'Wall sconce',f_bulbs:'Bulbs',f_radius:'Radius, m',f_facing:'Facing',fac_down:'Down',fac_up:'Up',f_power:'Power, W',
   q_label:'Detail',q_low:'Schematic',q_med:'Medium',q_high:'Realistic'
 }};
 function t(k,...a){let s=(T[lang]&&T[lang][k])||T.ru[k]||k;a.forEach((v,i)=>s=s.replace('{'+i+'}',v));return s;}
@@ -280,6 +293,7 @@ const DEFAULT_SCENE={
   activeLayer:91,nextId:428
 };
 function demoScene(){nextId=DEFAULT_SCENE.nextId||500;const d=DEFAULT_SCENE;return JSON.parse(JSON.stringify({room:d.room,walls:d.walls,windows:d.windows,tracks:d.tracks,lights:d.lights,objs:d.objs,sun:d.sun,layers:d.layers,activeLayer:d.activeLayer}));}
+function emptyScene(){nextId=10;return{room:{grid:0.5,ceil:2.7},walls:[],windows:[],tracks:[],lights:[],objs:[],sun:{x:5,y:-6,height:9,on:false,intensity:3.2,sky:0.3,color:'#fff3df',soft:8,winlight:4.5},layers:[{id:1,name:'Слой 1',visible:true,collapsed:false}],activeLayer:1};}
 let S=demoScene();
 let sel=null, mode='2d';
 const ui={intensity:10,ambient:0.1,soft:4,ceiling:false,helpers:false,gizmo:true,quality:'med'};
@@ -296,7 +310,11 @@ function normalizeLayers(){
 function layerOf(e){return S.layers.find(l=>l.id===e.layer);}
 function vis(e){const l=layerOf(e);return !l||l.visible;}
 const findModel=(k,id)=> k==='light'?S.lights.find(x=>x.id===id):k==='track'?getTrack(id):k==='win'?S.windows.find(x=>x.id===id):k==='wall'?getWall(id):k==='sun'?S.sun:S.objs.find(x=>x.id===id);
-function lightBase(L){if(L.trackId!=null){const t=getTrack(L.trackId);if(t){const a=t.rot*D2R,u=clamp(L.u||0,-t.len/2,t.len/2);return [t.x+Math.cos(a)*u,t.y+Math.sin(a)*u];}}return[L.x,L.y];}
+function lightBase(L){
+  if(L.shape==='sconce'&&L.wallId!=null){const w=getWall(L.wallId);if(w){const len=wallLen(w)||1,ux=(w.x2-w.x1)/len,uy=(w.y2-w.y1)/len,pos=clamp(L.pos||0,0,len);return[w.x1+ux*pos,w.y1+uy*pos];}}
+  if(L.trackId!=null){const t=getTrack(L.trackId);if(t){const a=t.rot*D2R,u=clamp(L.u||0,-t.len/2,t.len/2);return [t.x+Math.cos(a)*u,t.y+Math.sin(a)*u];}}return[L.x,L.y];}
+// нормаль стены в комнату (для бра)
+function sconceNormal(L){const w=getWall(L.wallId);if(!w)return[0,-1];const len=wallLen(w)||1,ux=(w.x2-w.x1)/len,uy=(w.y2-w.y1)/len;let nx=-uy,ny=ux;const bb=bbox(),[px,py]=lightBase(L);if(((bb.cx-px)*nx+(bb.cy-py)*ny)<0){nx=-nx;ny=-ny;}return[nx,ny];}
 const lightMH=L=>{if(L.trackId!=null){const t=getTrack(L.trackId);if(t)return t.mh;}return L.mh;};
 const wallLen=w=>Math.hypot(w.x2-w.x1,w.y2-w.y1);
 function trackOffsets(len,dmode,n,pitchMM){if(dmode==='pitch'){const p=Math.max(0.001,(pitchMM||0)/1000),k=Math.max(0,Math.floor(len/p+1e-9)),span=k*p,o=[];for(let i=0;i<=k;i++)o.push(-span/2+i*p);return o;}const c=Math.max(1,n|0),o=[];if(c===1)return[0];for(let i=0;i<c;i++)o.push((i/(c-1)-0.5)*len);return o;}
@@ -358,6 +376,13 @@ function drawGrid2d(){
   g2.stroke();
 }
 function drawLightFoot2d(L){
+  if(L.shape==='sconce'){ // бра — сектор от стены в комнату
+    if(L.wallId==null)return;const[bx,by]=lightBase(L),[nx,ny]=sconceNormal(L),ang=Math.atan2(ny,nx);const[sx,sy]=w2s(bx,by);const[r,gg,b]=hexrgb(L.color);
+    const hf=(Math.max(L.beam,L.field)/2)*D2R,hb=(L.beam/2)*D2R;
+    g2.fillStyle=`rgba(${r},${gg},${b},0.10)`;g2.beginPath();g2.moveTo(sx,sy);g2.arc(sx,sy,2.6*view.scale,ang-hf,ang+hf);g2.closePath();g2.fill();
+    g2.fillStyle=`rgba(${r},${gg},${b},0.20)`;g2.beginPath();g2.moveTo(sx,sy);g2.arc(sx,sy,2.0*view.scale,ang-hb,ang+hb);g2.closePath();g2.fill();
+    return;
+  }
   if(L.dir==='up')return;   // uplight — на пол не светит
   const[cx,cy]=lightCenter(L),mh=lightMH(L);if(mh<=0)return;const[r,gg,b]=hexrgb(L.color);
   for(const [ex,ey] of emittersPlan(L)){
@@ -402,7 +427,7 @@ function drawLightMark2d(L){
   if((L.shape==='line'||L.shape==='rect')&&L.trackId==null){const a=L.rot*D2R;const[p1x,p1y]=w2s(L.x-Math.cos(a)*L.len/2,L.y-Math.sin(a)*L.len/2),[p2x,p2y]=w2s(L.x+Math.cos(a)*L.len/2,L.y+Math.sin(a)*L.len/2);g2.strokeStyle=L.color;g2.lineWidth=3;g2.globalAlpha=.5;g2.beginPath();g2.moveTo(p1x,p1y);g2.lineTo(p2x,p2y);g2.stroke();g2.globalAlpha=1;}
   if(L.shape==='chandelier'&&L.trackId==null){g2.strokeStyle=L.color;g2.globalAlpha=.4;g2.beginPath();g2.arc(sx,sy,(L.radius||0.4)*view.scale,0,TAU);g2.stroke();g2.globalAlpha=1;for(const[ex,ey]of emittersPlan(L)){const[mx,my]=w2s(ex,ey);g2.beginPath();g2.arc(mx,my,3,0,TAU);g2.fillStyle=L.color;g2.fill();}}
   g2.beginPath();g2.arc(sx,sy,isSel?7:5,0,TAU);g2.fillStyle=L.color;g2.fill();g2.lineWidth=2;g2.strokeStyle=isSel?'#fff':'#0008';g2.stroke();
-  if(L.tilt>0){const az=L.az*D2R,ln=16+L.tilt*0.3;g2.beginPath();g2.moveTo(sx,sy);g2.lineTo(sx+Math.cos(az)*ln,sy+Math.sin(az)*ln);g2.strokeStyle=L.color;g2.lineWidth=2;g2.stroke();}
+  if(L.tilt>0&&L.shape!=='sconce'){const az=L.az*D2R,ln=16+L.tilt*0.3;g2.beginPath();g2.moveTo(sx,sy);g2.lineTo(sx+Math.cos(az)*ln,sy+Math.sin(az)*ln);g2.strokeStyle=L.color;g2.lineWidth=2;g2.stroke();}
   g2.fillStyle='#fff';g2.font='10px sans-serif';g2.fillText(L.name+(L.dir==='up'?' ↑':''),sx+8,sy-7);
 }
 function drawSun2d(){
@@ -448,7 +473,7 @@ window.addEventListener('mousemove',e=>{
   if(drag.kind==='obj'){m.x=round(drag.snap.x+dx);m.y=round(drag.snap.y+dy);}
   else if(drag.kind==='track'){m.x=round(drag.snap.x+dx);m.y=round(drag.snap.y+dy);}
   else if(drag.kind==='sun'){m.x=round(drag.snap.x+dx);m.y=round(drag.snap.y+dy);}
-  else if(drag.kind==='light'){if(m.trackId!=null){const t=getTrack(m.trackId),a=t.rot*D2R;m.u=clamp(round((wx-t.x)*Math.cos(a)+(wy-t.y)*Math.sin(a)),-t.len/2,t.len/2);}else{m.x=round(drag.snap.x+dx);m.y=round(drag.snap.y+dy);}}
+  else if(drag.kind==='light'){if(m.shape==='sconce'){const nw=nearestWall(wx,wy);if(nw){m.wallId=nw.w.id;m.pos=round(clamp(nw.pos,0,nw.len));}}else if(m.trackId!=null){const t=getTrack(m.trackId),a=t.rot*D2R;m.u=clamp(round((wx-t.x)*Math.cos(a)+(wy-t.y)*Math.sin(a)),-t.len/2,t.len/2);}else{m.x=round(drag.snap.x+dx);m.y=round(drag.snap.y+dy);}}
   else if(drag.kind==='wall'){if(drag.end===1){m.x1=round(drag.snap.x1+dx);m.y1=round(drag.snap.y1+dy);}else if(drag.end===2){m.x2=round(drag.snap.x2+dx);m.y2=round(drag.snap.y2+dy);}else{m.x1=round(drag.snap.x1+dx);m.y1=round(drag.snap.y1+dy);m.x2=round(drag.snap.x2+dx);m.y2=round(drag.snap.y2+dy);}}
   else if(drag.kind==='win'){const nw=nearestWall(wx,wy);if(nw){m.wallId=nw.w.id;m.pos=round(clamp(nw.pos,0,nw.len));}}
   draw2d();fillEditor();renderCards();
@@ -528,10 +553,13 @@ function buildObj(o){const g=new THREE.Group();const box=new THREE.Mesh(new THRE
 function buildTrack(t){const g=new THREE.Group();const rail=new THREE.Mesh(new THREE.BoxGeometry(t.len,0.04,0.05),mat(new THREE.Color(t.color||'#7fd0ff').getHex(),{metalness:0.3,roughness:0.5,emissive:0x0a1822}));rail.castShadow=true;g.add(rail);tag(g,'track',t.id);root.add(g);groups.set(t.id,g);}
 function buildLight(L){
   const g=new THREE.Group();const offs=emitterOffsets3D(L),col=new THREE.Color(L.color||'#ffd27a').getHex();
-  const beam=L.beam||30,field=Math.max(beam,L.field||50),inten=ui.intensity/Math.sqrt(offs.length);
-  const b=(L.tilt||0)*D2R,az=(L.az||0)*D2R,yS=L.dir==='up'?1:-1,dir=new THREE.Vector3(Math.sin(b)*Math.cos(az),yS*Math.cos(b),Math.sin(b)*Math.sin(az)).normalize();
+  const pw=(L.power||60)/60;   // мощность в Вт → множитель (60Вт = 1.0)
+  const beam=L.beam||30,field=Math.max(beam,L.field||50),inten=ui.intensity*pw/Math.sqrt(offs.length);
+  const b=(L.tilt||0)*D2R,az=(L.az||0)*D2R,yS=L.dir==='up'?1:-1;
+  let dir=new THREE.Vector3(Math.sin(b)*Math.cos(az),yS*Math.cos(b),Math.sin(b)*Math.sin(az)).normalize();
+  if(L.shape==='sconce'&&L.wallId!=null){const[nx,ny]=sconceNormal(L),pitch=(L.tilt||0)*D2R,vs=L.dir==='up'?1:-1;dir=new THREE.Vector3(nx*Math.cos(pitch),vs*Math.sin(pitch),ny*Math.cos(pitch)).normalize();}
   if(L.shape==='chandelier'){ // люстра: один омни-источник в центре (тень → стены перекрывают свет) + лампочки-сферы
-    const pl=new THREE.PointLight(col,Math.max(ui.intensity*0.9,1),0,0);pl.position.set(0,0,0);
+    const pl=new THREE.PointLight(col,Math.max(ui.intensity*pw*0.9,1),0,0);pl.position.set(0,0,0);
     pl.castShadow=shadowCount<curMax;if(pl.castShadow){shadowCount++;pl.shadow.mapSize.set(Math.min(1024,curMS),Math.min(1024,curMS));pl.shadow.bias=-0.002;pl.shadow.camera.near=0.05;pl.shadow.camera.far=Math.max(8,bbox().size);}
     g.add(pl);
     for(const[ox,oy]of offs){const hb=new THREE.Mesh(new THREE.SphereGeometry(0.05,10,8),new THREE.MeshBasicMaterial({color:col}));hb.position.set(ox,0,oy);g.add(hb);}
@@ -581,7 +609,7 @@ cv.addEventListener('pointerup',e=>{if(e.button!==0||!down3)return;const moved=M
 
 /* ================= shared: select/add/del/cards/editor ================= */
 function select(kind,id){sel=kind?{kind,id}:null;if(sel){const m=findModel(kind,id);if(m&&m.layer!=null)S.activeLayer=m.layer;}if(mode==='3d'){if(sel&&ui.gizmo)attachGizmo();else tc.detach();}renderCards();fillEditor();if(mode==='2d')draw2d();}
-function mkLight(x,y){return{id:nextId++,name:'L'+nextId,color:'#ffd27a',shape:'point',dir:'down',bulbs:5,radius:0.4,x,y,mh:S.room.ceil,beam:28,field:46,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,layer:S.activeLayer};}
+function mkLight(x,y){return{id:nextId++,name:'L'+nextId,color:'#ffd27a',shape:'point',dir:'down',bulbs:5,radius:0.4,x,y,mh:S.room.ceil,beam:28,field:46,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,wallId:null,power:60,layer:S.activeLayer};}
 function mkTrack(x,y){return{id:nextId++,name:'шина',color:'#7fd0ff',x,y,len:2,rot:0,mh:S.room.ceil,layer:S.activeLayer};}
 function mkObj(x,y){return{id:nextId++,name:'объект',color:'#9aa7b8',x,y,w:1.6,d:0.9,h:0.9,base:0,rot:0,layer:S.activeLayer};}
 function mkWindow(){const w=S.walls[0];return{id:nextId++,name:'окно',wallId:w?w.id:null,pos:w?wallLen(w)/2:0,width:1.6,sill:0.9,height:1.4,kind:'window',layer:S.activeLayer};}
@@ -594,7 +622,9 @@ function bindLightToTrack(L,tid){
 $('#addLight').onclick=()=>{const bb=bbox();const L=mkLight(bb.cx,bb.cy);S.lights.push(L);sync(true);select('light',L.id);};
 $('#addTrack').onclick=()=>{const bb=bbox();const t=mkTrack(bb.cx,bb.cy);S.tracks.push(t);sync(true);select('track',t.id);};
 $('#addObj').onclick=()=>{const bb=bbox();const o=mkObj(bb.cx-0.8,bb.cy-0.45);S.objs.push(o);sync(true);select('obj',o.id);};
-$('#addWin').onclick=()=>{if(!S.walls.length){showErr(t('err_drawfirst'));return;}const w=mkWindow();S.windows.push(w);sync(true);select('win',w.id);};
+function addOpening(kind){if(!S.walls.length){showErr(t('err_drawfirst'));return;}const w=mkWindow();w.kind=kind;if(kind==='door'){w.sill=0;w.height=2.1;w.name='дверь';}else{w.name='окно';}S.windows.push(w);sync(true);select('win',w.id);}
+$('#addWin').onclick=()=>addOpening('window');
+$('#addDoor').onclick=()=>addOpening('door');
 $('#drawWall').onclick=()=>{if(mode!=='2d')setMode('2d');drawMode=!drawMode;drawPrev=null;$('#drawWall').classList.toggle('on',drawMode);if(drawMode){select(null);}setHint();draw2d();};
 function delEntity(kind,id){
   if(kind==='light')S.lights=S.lights.filter(x=>x.id!==id);
@@ -646,7 +676,7 @@ function renderLayers(){
 }
 function delLayer(id){if(S.layers.length<=1)return;const rest=S.layers.find(l=>l.id!==id).id;for(const e of allEntities())if(e.layer===id)e.layer=rest;S.layers=S.layers.filter(l=>l.id!==id);if(S.activeLayer===id)S.activeLayer=rest;sync(true);}
 $('#addLayer').onclick=()=>{const l={id:nextId++,name:t('layer_name')+' '+(S.layers.length+1),visible:true};S.layers.push(l);S.activeLayer=l.id;renderLayers();persistSoon();};
-$('#reset').onclick=()=>{if(!confirm(t('confirm_reset')))return;try{localStorage.removeItem('lightspot3');}catch(e){}S=demoScene();normalizeLayers();sel=null;tc.detach();fitted=false;syncRoom();syncSun();fit2d();sync(true);};
+$('#reset').onclick=()=>{if(!confirm(t('confirm_reset')))return;try{localStorage.removeItem('lightspot3');}catch(e){}S=emptyScene();normalizeLayers();sel=null;tc.detach();fitted=false;syncRoom();syncSun();fit2d();sync(true);};
 
 function fillEditor(){
   const box=$('#editor');box.innerHTML='';
@@ -656,9 +686,17 @@ function fillEditor(){
   if(sel.kind==='light'){const tr=m.trackId!=null?getTrack(m.trackId):null;rows.push(H(t('ed_light')+(tr?` · «${tr.name}»`:'')));txt(t('f_name'),'name');col(t('f_color'),'color');
     if(S.tracks.length)rows.push(FS(t('f_track'),['',...S.tracks.map(x=>String(x.id))],[t('track_none'),...S.tracks.map(x=>x.name)],m.trackId==null?'':String(m.trackId),v=>{bindLightToTrack(m,v===''?null:parseInt(v));commit(true);fillEditor();}));
     if(tr){num(t('f_u'),'u',0.05,false,v=>clamp(v,-tr.len/2,tr.len/2));}
-    else{rows.push(FS(t('f_shape'),['point','line','rect','chandelier'],[t('sh_point'),t('sh_line'),t('sh_rect'),t('sh_chand')],m.shape,v=>{m.shape=v;commit(true);fillEditor();}));num(t('f_x'),'x',0.1,false);num(t('f_y'),'y',0.1,false);num(t('f_height'),'mh',0.1,false);if(m.shape==='line'||m.shape==='rect')num(t('f_len'),'len',0.05,true);if(m.shape==='rect'){num(t('f_width'),'wid',0.05,true);num(t('f_n_along'),'n',1,true);num(t('f_n_across'),'n2',1,true);}if(m.shape==='line')num(t('f_count'),'n',1,true);if(m.shape==='chandelier'){num(t('f_bulbs'),'bulbs',1,true,v=>Math.max(1,v|0));num(t('f_radius'),'radius',0.05,true,v=>Math.max(0,v));}if(m.shape==='line'||m.shape==='rect'){rng(t('f_rot'),'rot',0,360);rows.push(BP('⟲ −15°',()=>{m.rot=((m.rot||0)-15+360)%360;commit(true);fillEditor();},'⟳ +15°',()=>{m.rot=((m.rot||0)+15)%360;commit(true);fillEditor();}));}}
+    else{rows.push(FS(t('f_shape'),['point','line','rect','chandelier','sconce'],[t('sh_point'),t('sh_line'),t('sh_rect'),t('sh_chand'),t('sh_sconce')],m.shape,v=>{m.shape=v;if(v==='sconce'&&m.wallId==null&&S.walls.length){m.wallId=S.walls[0].id;m.pos=wallLen(getWall(m.wallId))/2;m.mh=1.6;}commit(true);fillEditor();}));
+      if(m.shape==='sconce'){
+        rows.push(FS(t('ed_wall'),S.walls.map(w=>String(w.id)),S.walls.map((w,i)=>t('card_wall')+' '+(i+1)),String(m.wallId),v=>{m.wallId=parseInt(v);const w=getWall(m.wallId);m.pos=clamp(m.pos||0,0,wallLen(w));commit(true);}));
+        num(t('f_pos'),'pos',0.1,true,v=>{const w=getWall(m.wallId);return clamp(v,0,w?wallLen(w):v);});num(t('f_height'),'mh',0.1,true);
+      } else {
+        num(t('f_x'),'x',0.1,false);num(t('f_y'),'y',0.1,false);num(t('f_height'),'mh',0.1,false);
+        if(m.shape==='line'||m.shape==='rect')num(t('f_len'),'len',0.05,true);if(m.shape==='rect'){num(t('f_width'),'wid',0.05,true);num(t('f_n_along'),'n',1,true);num(t('f_n_across'),'n2',1,true);}if(m.shape==='line')num(t('f_count'),'n',1,true);if(m.shape==='chandelier'){num(t('f_bulbs'),'bulbs',1,true,v=>Math.max(1,v|0));num(t('f_radius'),'radius',0.05,true,v=>Math.max(0,v));}if(m.shape==='line'||m.shape==='rect'){rng(t('f_rot'),'rot',0,360);rows.push(BP('⟲ −15°',()=>{m.rot=((m.rot||0)-15+360)%360;commit(true);fillEditor();},'⟳ +15°',()=>{m.rot=((m.rot||0)+15)%360;commit(true);fillEditor();}));}
+      }}
+    num(t('f_power'),'power',5,true,v=>Math.max(1,v));
     rows.push(FS(t('f_facing'),['down','up'],[t('fac_down'),t('fac_up')],m.dir||'down',v=>{m.dir=v;commit(true);}));
-    rng(t('f_beam'),'beam',1,170);rng(t('f_field'),'field',1,178);rng(t('f_tilt'),'tilt',0,80);rng(t('f_az'),'az',0,360);}
+    rng(t('f_beam'),'beam',1,170);rng(t('f_field'),'field',1,178);rng(t('f_tilt'),'tilt',0,80);if(m.shape!=='sconce')rng(t('f_az'),'az',0,360);}
   else if(sel.kind==='track'){rows.push(H(t('grp_tracks')));txt(t('f_name'),'name');col(t('f_color'),'color');num(t('f_x'),'x',0.1,false);num(t('f_y'),'y',0.1,false);num(t('f_len'),'len',0.1,true,v=>Math.max(0.1,v));num(t('f_height'),'mh',0.1,false);rng(t('f_rot'),'rot',0,180);rows.push(B(t('btn_addfix'),()=>{const L=mkLight(m.x,m.y);L.trackId=m.id;L.u=0;L.shape='point';S.lights.push(L);sync(true);select('light',L.id);},true));rows.push(BP(t('btn_distrib'),()=>distribute(m,'even'),t('btn_pitch'),()=>{const v=prompt(t('prompt_pitch'),300);if(v==null)return;distribute(m,'pitch',Math.max(1,parseFloat(v)||1)/1000);}));}
   else if(sel.kind==='obj'){rows.push(H(t('ed_obj')));txt(t('f_name'),'name');col(t('f_color'),'color');num(t('f_x'),'x',0.1,false);num(t('f_y'),'y',0.1,false);num(t('f_width'),'w',0.1,true);num(t('f_depth'),'d',0.1,true);num(t('f_height'),'h',0.05,true);num(t('f_base'),'base',0.05,true,v=>Math.max(0,v));rng(t('f_rot'),'rot',0,360);rows.push(BP('⟲ −15°',()=>{m.rot=((m.rot||0)-15+360)%360;commit(false);fillEditor();},'⟳ +15°',()=>{m.rot=((m.rot||0)+15)%360;commit(false);fillEditor();}));}
   else if(sel.kind==='wall'){rows.push(H(t('ed_wall')));num('X1','x1',0.1,true);num('Y1','y1',0.1,true);num('X2','x2',0.1,true);num('Y2','y2',0.1,true);rows.push(M(t('mini_wall',round(wallLen(m)))));}
@@ -725,7 +763,7 @@ function applyScene(d){
   if(d._ui)Object.assign(ui,d._ui);
 }
 function loadData(d){applyScene(d);if(d._view)Object.assign(view,d._view);sel=null;tc.detach();fitted=false;clearErr();syncRoom();syncSun();syncViewUI();applyI18n();if(!d._view)fit2d();sync(true);}
-function normLight(l){return{shape:'point',dir:'down',bulbs:5,radius:0.4,beam:30,field:50,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.7,x:0,y:0,...l};}
+function normLight(l){return{shape:'point',dir:'down',bulbs:5,radius:0.4,beam:30,field:50,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,wallId:null,power:60,mh:2.7,x:0,y:0,...l};}
 function normWin(w){return{kind:'window',sill:0.9,height:1.4,width:1.6,pos:1,...w};}
 function fit2d(){const bb=bbox(),W=cv2.clientWidth||800,Hh=cv2.clientHeight||600,pad=1.2;const s=Math.min(W/((bb.maxx-bb.minx)+2*pad),Hh/((bb.maxy-bb.miny)+2*pad));view.scale=clamp(s,8,300);view.panx=bb.minx-(W/view.scale-(bb.maxx-bb.minx))/2;view.pany=bb.miny-(Hh/view.scale-(bb.maxy-bb.miny))/2;}
 function fit3d(){const bb=bbox();orbit.target.set(bb.cx,0.6,bb.cy);if(!fitted){const d=bb.size||8;camera.position.set(bb.cx+d*0.85,S.room.ceil+d*0.9,bb.cy+d*1.1);fitted=true;}orbit.update();}

@@ -1,34 +1,39 @@
 # Light Spot Planner
 
-2D/3D-планировщик светового пятна, теней и дневного света. Помогает подобрать, как ляжет свет от светильника с заданным углом пучка — с учётом высоты подвеса, мебели, теней и естественного света из окон.
+A 2D/3D planner for light spots, shadows and daylight. Lay out rooms, furniture and fixtures, set beam angles and mounting heights, and see how the light falls — including shadows cast by walls and furniture, and natural light coming through windows.
 
-**Демо:** https://meduzkin.github.io/light-planner/
+**Live demo:** https://meduzkin.github.io/light-planner/
 
-Один HTML-файл, без сборки. 3D на [Three.js](https://threejs.org/) (CDN). Язык RU/EN, всё автосохраняется в браузере (localStorage) — при перезагрузке ничего не теряется.
+Single HTML file, no build step. 3D powered by [Three.js](https://threejs.org/) (CDN). UI in English/Russian, everything auto-saves to the browser (localStorage) — nothing is lost on refresh.
 
-## Возможности
+## Features
 
-**2D-план (вид сверху):**
-- рисование стен-отрезков (произвольная форма, несколько комнат);
-- окна и двери — проёмы на стене, скользят вдоль и перепрыгивают между стенами;
-- мебель/объекты (коробки с высотой и навесом);
-- светильники: точечные, линейные (лента с шагом/числом диодов), панели;
-- шины (треки) с привязкой светильников и распределением;
-- угол пучка (beam) и засветки (field), наклон и азимут.
+**2D plan (top view):**
+- draw walls as segments (arbitrary shapes, multiple rooms);
+- windows and doors as openings that slide along walls and snap between them;
+- furniture / objects (boxes with height, wall-mount offset and rotation);
+- fixtures: spot, linear (LED strip by count or pitch), panel, chandelier (omni cluster), wall sconce;
+- power in watts per fixture; tracks (rails) with attached, distributable fixtures;
+- beam / field angles, tilt, azimuth, up/down facing.
 
-**3D-вид (визуализатор):**
-- реальные источники с мягкими GPU-тенями (VSM);
-- дневной свет: перетаскиваемая точка солнца, пятно от окна + мягкая подсветка из проёма, свет неба;
-- орбита камерой, gizmo-перетаскивание, выбор кликом;
-- добавление/правка объектов, света и положения солнца прямо в 3D.
+**3D view (visualizer):**
+- real lights with shadows — solid walls block light, it only passes through window/door openings;
+- daylight: a draggable sun point, window light patch + soft fill from the opening, sky light;
+- detail switch (schematic / medium / realistic) to trade quality for speed in realtime;
+- orbit camera, gizmo dragging, click-to-select; add/edit objects, lights and the sun right in 3D.
 
-## Управление
+**Editing:**
+- Photoshop-style layer tree (collapsible groups, per-layer visibility, pin objects to layers);
+- copy / paste / duplicate any object (Ctrl/Cmd + C / V / D);
+- import / export the whole scene to a JSON file.
 
-- **2D:** клик — выбрать, тащить — двигать, ПКМ/Space — панорама, колесо — зум. Рисование стен: клик — точка, двойной клик / Esc — закончить.
-- **3D:** клик — выбрать, gizmo — двигать, окно/солнце тащи мышью, ЛКМ по фону — вращать камеру, колесо — зум.
+## Controls
 
-## Хостинг
+- **2D:** click — select, drag — move, RMB/Space — pan, wheel — zoom. Drawing walls: click — point (0.1 m snap, Shift — free, snaps to wall ends), double-click / Esc — finish.
+- **3D:** click — select, gizmo — move, drag window/sun with the mouse, LMB on background — orbit, wheel — zoom.
 
-Статика на GitHub Pages. Точка входа — `index.html`.
+## Hosting
 
-🤖 Сделано с помощью [Claude Code](https://claude.com/claude-code)
+Static site on GitHub Pages. Entry point is `index.html`.
+
+🤖 Built with [Claude Code](https://claude.com/claude-code)
