@@ -560,6 +560,14 @@ function buildLight(L){
   const b=(L.tilt||0)*D2R,az=(L.az||0)*D2R,yS=L.dir==='up'?1:-1;
   let dir=new THREE.Vector3(Math.sin(b)*Math.cos(az),yS*Math.cos(b),Math.sin(b)*Math.sin(az)).normalize();
   if(L.shape==='sconce'&&L.wallId!=null){const[nx,ny]=sconceNormal(L),pitch=(L.tilt||0)*D2R,vs=L.dir==='up'?1:-1;dir=new THREE.Vector3(nx*Math.cos(pitch),vs*Math.sin(pitch),ny*Math.cos(pitch)).normalize();}
+  if(L.shape==='sconce'&&L.wallId!=null){ // бра: источник чуть перед стеной, светит по нормали в комнату
+    const[nx,ny]=sconceNormal(L),off=0.12;
+    const sl=new THREE.SpotLight(col,inten);sl.position.set(nx*off,0,ny*off);sl.angle=Math.max(0.02,(field/2)*D2R);sl.penumbra=clamp(1-beam/field,0,1);sl.decay=0;sl.distance=0;
+    sl.castShadow=shadowCount<curMax;if(sl.castShadow)shadowCount++;sl.shadow.mapSize.set(curMS,curMS);sl.shadow.radius=Math.max(1,ui.soft);sl.shadow.blurSamples=curBlur;sl.shadow.bias=-0.0006;sl.shadow.camera.near=0.05;sl.shadow.camera.far=14;
+    const tgt=new THREE.Object3D();tgt.position.set(nx*off+dir.x*5,dir.y*5,ny*off+dir.z*5);g.add(tgt);sl.target=tgt;g.add(sl);
+    const h=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.14,0.06),mat(0x15171c,{metalness:0.4,roughness:0.6}));g.add(h);
+    tag(g,'light',L.id);root.add(g);groups.set(L.id,g);return;
+  }
   if(L.shape==='chandelier'){ // люстра: один омни-источник в центре (тень → стены перекрывают свет) + лампочки-сферы
     const pl=new THREE.PointLight(col,Math.max(ui.intensity*pw*0.9,1),0,0);pl.position.set(0,0,0);
     pl.castShadow=shadowCount<curMax;if(pl.castShadow){shadowCount++;pl.shadow.mapSize.set(Math.min(1024,curMS),Math.min(1024,curMS));pl.shadow.bias=-0.002;pl.shadow.camera.near=0.05;pl.shadow.camera.far=Math.max(8,bbox().size);}
