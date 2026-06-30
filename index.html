@@ -307,6 +307,8 @@ function normalizeLayers(){
   const def=S.layers[0].id;
   for(const e of allEntities())if(e.layer==null||!S.layers.find(l=>l.id===e.layer))e.layer=def;
 }
+// держим маркер солнца близко к плану (сохраняя направление), иначе до него не дотянуться
+function normalizeSun(){if(!S.sun)return;const bb=bbox();let dx=S.sun.x-bb.cx,dy=S.sun.y-bb.cy,d=Math.hypot(dx,dy);if(d<0.01){dx=0;dy=-1;d=1;}const want=Math.max(2,bb.size*0.45);if(d>want){S.sun.x=round(bb.cx+dx/d*want);S.sun.y=round(bb.cy+dy/d*want);}}
 function layerOf(e){return S.layers.find(l=>l.id===e.layer);}
 function vis(e){const l=layerOf(e);return !l||l.visible;}
 const findModel=(k,id)=> k==='light'?S.lights.find(x=>x.id===id):k==='track'?getTrack(id):k==='win'?S.windows.find(x=>x.id===id):k==='wall'?getWall(id):k==='sun'?S.sun:S.objs.find(x=>x.id===id);
@@ -431,10 +433,10 @@ function drawLightMark2d(L){
   g2.fillStyle='#fff';g2.font='10px sans-serif';g2.fillText(L.name+(L.dir==='up'?' ↑':''),sx+8,sy-7);
 }
 function drawSun2d(){
-  if(!S.sun.on)return;const bb=bbox();const[sx,sy]=w2s(S.sun.x,S.sun.y),[cx,cy]=w2s(bb.cx,bb.cy);
-  g2.strokeStyle='#ffe08a55';g2.lineWidth=1.5;g2.setLineDash([5,5]);g2.beginPath();g2.moveTo(sx,sy);g2.lineTo(cx,cy);g2.stroke();g2.setLineDash([]);
-  g2.beginPath();g2.arc(sx,sy,selIs('sun','sun')?9:7,0,TAU);g2.fillStyle='#ffe08a';g2.fill();g2.strokeStyle=selIs('sun','sun')?'#fff':'#0008';g2.lineWidth=2;g2.stroke();
-  g2.fillStyle='#ffe08a';g2.font='10px sans-serif';g2.fillText('☀ солнце (h'+S.sun.height+')',sx+11,sy-8);
+  const bb=bbox();const[sx,sy]=w2s(S.sun.x,S.sun.y),[cx,cy]=w2s(bb.cx,bb.cy);const c=S.sun.on?'#ffe08a':'#7a7158';
+  g2.strokeStyle=(S.sun.on?'#ffe08a':'#7a7158')+'55';g2.lineWidth=1.5;g2.setLineDash([5,5]);g2.beginPath();g2.moveTo(sx,sy);g2.lineTo(cx,cy);g2.stroke();g2.setLineDash([]);
+  g2.beginPath();g2.arc(sx,sy,selIs('sun','sun')?9:7,0,TAU);g2.fillStyle=c;g2.fill();g2.strokeStyle=selIs('sun','sun')?'#fff':'#0008';g2.lineWidth=2;g2.stroke();
+  g2.fillStyle=c;g2.font='10px sans-serif';g2.fillText('☀ '+(S.sun.on?'':'(off) ')+'h'+S.sun.height,sx+11,sy-8);
 }
 function selIs(k,id){return sel&&sel.kind===k&&sel.id===id;}
 
@@ -442,7 +444,7 @@ function selIs(k,id){return sel&&sel.kind===k&&sel.id===id;}
 let drag=null,pan=null,space=false,drawMode=false,drawPrev=null,drawCur=null,shiftDown=false;
 function hit2d(sx,sy){
   for(let i=S.lights.length-1;i>=0;i--){const L=S.lights[i];if(!vis(L))continue;const[bx,by]=lightBase(L);const[fx,fy]=w2s(bx,by);if(Math.hypot(fx-sx,fy-sy)<11)return{kind:'light',id:L.id};}
-  if(S.sun.on){const[ux,uy]=w2s(S.sun.x,S.sun.y);if(Math.hypot(ux-sx,uy-sy)<12)return{kind:'sun',id:'sun'};}
+  {const[ux,uy]=w2s(S.sun.x,S.sun.y);if(Math.hypot(ux-sx,uy-sy)<12)return{kind:'sun',id:'sun'};}
   for(let i=S.tracks.length-1;i>=0;i--){const t=S.tracks[i];if(!vis(t))continue;const a=t.rot*D2R;const[p1,p2]=[w2s(t.x-Math.cos(a)*t.len/2,t.y-Math.sin(a)*t.len/2),w2s(t.x+Math.cos(a)*t.len/2,t.y+Math.sin(a)*t.len/2)];if(distSeg(sx,sy,p1[0],p1[1],p2[0],p2[1])<8)return{kind:'track',id:t.id};}
   for(let i=S.windows.length-1;i>=0;i--){const win=S.windows[i];if(!vis(win))continue;const w=getWall(win.wallId);if(!w)continue;const len=wallLen(w)||1,ux=(w.x2-w.x1)/len,uy=(w.y2-w.y1)/len;const c0=w.x1+ux*clamp(win.pos-win.width/2,0,len),c1=w.y1+uy*clamp(win.pos-win.width/2,0,len),d0=w.x1+ux*clamp(win.pos+win.width/2,0,len),d1=w.y1+uy*clamp(win.pos+win.width/2,0,len);const[a0,a1]=w2s(c0,c1),[b0,b1]=w2s(d0,d1);if(distSeg(sx,sy,a0,a1,b0,b1)<9)return{kind:'win',id:win.id};}
   for(let i=S.walls.length-1;i>=0;i--){const w=S.walls[i];if(!vis(w))continue;const[a0,a1]=w2s(w.x1,w.y1),[b0,b1]=w2s(w.x2,w.y2);
@@ -536,7 +538,7 @@ function doBuild(){
   for(const t of S.tracks)if(vis(t))buildTrack(t);
   for(const L of S.lights)if(vis(L))buildLight(L);
   for(const win of S.windows)if(vis(win))buildWinExtras(win);
-  if(S.sun.on)buildSun(bb,ceil);
+  buildSun(bb,ceil);
   layout3d();
   if(sel&&groups.has(sel.id)&&ui.gizmo&&sel.kind!=='win')attachGizmo();else tc.detach();
 }
@@ -576,13 +578,15 @@ function buildWinExtras(win){
   if(w&&S.sun.on&&S.sun.winlight>0){const len=wallLen(w)||1,ux=(w.x2-w.x1)/len,uy=(w.y2-w.y1)/len,pos=clamp(win.pos,0,len),cx=w.x1+ux*pos,cy=w.y1+uy*pos,sill=win.kind==='door'?0:win.sill,vc=clamp(sill+ht/2,0,S.room.ceil),nx=-uy,ny=ux,bb=bbox(),s=((bb.cx-cx)*nx+(bb.cy-cy)*ny)>=0?1:-1;const rl=new THREE.RectAreaLight(new THREE.Color(0xbcd6ff).getHex(),S.sun.winlight,wd,ht);rl.position.set(cx,vc,cy);rl.lookAt(cx+nx*s,vc,cy+ny*s);root.add(rl);}
 }
 function buildSun(bb,ceil){
+  // маркер всегда (чтобы можно было двигать даже при выключенном свете)
+  const mk=new THREE.Group();mk.add(new THREE.Mesh(new THREE.SphereGeometry(0.18,16,12),new THREE.MeshBasicMaterial({color:S.sun.on?0xffe08a:0x6b6450})));tag(mk,'sun','sun');root.add(mk);groups.set('sun',mk);sunMarker=mk;
+  if(!S.sun.on)return;
   sunLight=new THREE.DirectionalLight(new THREE.Color(S.sun.color).getHex(),S.sun.intensity);sunLight.castShadow=renderer.shadowMap.enabled;
   const span=bb.size*0.85+2,sc=sunLight.shadow.camera;sc.left=-span;sc.right=span;sc.top=span;sc.bottom=-span;sc.near=0.5;sc.far=bb.size*4+40;
   sunLight.shadow.mapSize.set(curMS,curMS);sunLight.shadow.bias=-0.0004;sunLight.shadow.radius=Math.max(1,S.sun.soft);sunLight.shadow.blurSamples=curBlur;
   sunLight.target.position.set(bb.cx,0.5,bb.cy);root.add(sunLight.target);root.add(sunLight);
   root.add(new THREE.HemisphereLight(0xbcd6ff,0x35302a,S.sun.sky));
   const roof=new THREE.Mesh(new THREE.PlaneGeometry((bb.maxx-bb.minx)+3,(bb.maxy-bb.miny)+3),new THREE.MeshBasicMaterial({colorWrite:false,depthWrite:false,side:THREE.DoubleSide}));roof.rotation.x=Math.PI/2;roof.position.set(bb.cx,ceil,bb.cy);roof.castShadow=true;root.add(roof);
-  const mk=new THREE.Group();mk.add(new THREE.Mesh(new THREE.SphereGeometry(0.18,16,12),new THREE.MeshBasicMaterial({color:0xffe08a})));tag(mk,'sun','sun');root.add(mk);groups.set('sun',mk);sunMarker=mk;
 }
 function layout3d(){
   const ceil=S.room.ceil,bb=bbox();
@@ -591,7 +595,8 @@ function layout3d(){
   for(const L of S.lights){const g=groups.get(L.id);if(g){const[cx,cy]=lightCenter(L);g.position.set(cx,lightMH(L),cy);}}
   for(const w of S.walls){const g=groups.get(w.id);if(g){const dx=w.x2-w.x1,dy=w.y2-w.y1;g.position.set(w.x1,0,w.y1);g.rotation.y=Math.atan2(-dy,dx);}}
   for(const win of S.windows){const g=groups.get(win.id);if(g){const w=getWall(win.wallId);if(!w)continue;const len=wallLen(w)||1,ux=(w.x2-w.x1)/len,uy=(w.y2-w.y1)/len,pos=clamp(win.pos,0,len),cx=w.x1+ux*pos,cy=w.y1+uy*pos,sill=win.kind==='door'?0:win.sill,vc=clamp(sill+win.height/2,0,ceil);g.position.set(cx,vc,cy);g.rotation.y=Math.atan2(-uy,ux);}}
-  if(sunLight&&sunMarker){const p=V(S.sun.x,S.sun.y,S.sun.height);sunLight.position.copy(p);sunMarker.position.copy(p);sunLight.target.position.set(bb.cx,0.5,bb.cy);}
+  if(sunMarker)sunMarker.position.copy(V(S.sun.x,S.sun.y,S.sun.height));
+  if(sunLight){sunLight.position.copy(V(S.sun.x,S.sun.y,S.sun.height));sunLight.target.position.set(bb.cx,0.5,bb.cy);}
 }
 function attachGizmo(){if(sel.kind==='win'){tc.detach();return;}const g=groups.get(sel.id);if(!g){tc.detach();return;}tc.attach(g);tc.setMode('translate');const onTrack=sel.kind==='light'&&findModel('light',sel.id).trackId!=null;tc.showX=true;tc.showZ=true;tc.showY=!onTrack;}
 function onGizmo3d(){if(!sel)return;const g=tc.object;if(!g)return;const p=g.position,m=findModel(sel.kind,sel.id);if(!m)return;
@@ -745,7 +750,7 @@ function syncViewUI(){$('#quality').value=ui.quality||'med';$('#t_ceiling').chec
 function syncSun(){$('#d_on').checked=S.sun.on;$('#d_sun').value=S.sun.intensity;$('#d_sun_v').textContent=S.sun.intensity;$('#d_soft').value=S.sun.soft;$('#d_soft_v').textContent=S.sun.soft;$('#d_win').value=S.sun.winlight;$('#d_win_v').textContent=S.sun.winlight;$('#d_sky').value=S.sun.sky;$('#d_sky_v').textContent=S.sun.sky;$('#d_color').value=S.sun.color;}
 
 /* ================= save/load/fit ================= */
-$('#demo').onclick=()=>{S=demoScene();normalizeLayers();sel=null;tc.detach();fitted=false;syncRoom();syncSun();fit2d();sync(true);};
+$('#demo').onclick=()=>{S=demoScene();normalizeLayers();normalizeSun();sel=null;tc.detach();fitted=false;syncRoom();syncSun();fit2d();sync(true);};
 $('#export').onclick=()=>{const blob=new Blob([JSON.stringify({...S,nextId,_lang:lang,_ui:ui},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='light-plan.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);};
 $('#import').onclick=()=>$('#importFile').click();
 $('#importFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{loadData(JSON.parse(rd.result));}catch(err){showErr(t('err_parse')+err.message);}};rd.readAsText(f);e.target.value='';};
@@ -758,7 +763,7 @@ function applyScene(d){
   nextId=d.nextId||Math.max(1,...[...S.walls,...S.windows,...S.tracks,...S.lights,...S.objs].map(x=>x.id||0))+1;
   S.layers=d.layers&&d.layers.length?d.layers:[{id:90,name:'Слой 1',visible:true}];
   S.activeLayer=d.activeLayer;
-  normalizeLayers();
+  normalizeLayers();normalizeSun();
   if(d._lang==='ru'||d._lang==='en')lang=d._lang;
   if(d._ui)Object.assign(ui,d._ui);
 }
@@ -777,7 +782,7 @@ function tick(){if(mode==='3d'){orbit.update();renderer.render(scene,camera);}re
 
 let bootMode='2d', restored=false;
 try{const raw=localStorage.getItem('lightspot3');if(raw){const d=JSON.parse(raw);if(d&&d.room){applyScene(d);if(d._view){Object.assign(view,d._view);restored=true;}if(d._mode)bootMode=d._mode;}}}catch(e){}
-normalizeLayers();syncRoom();syncSun();syncViewUI();resize();if(!restored)fit2d();applyI18n();renderCards();fillEditor();updateInfo();setMode(bootMode);tick();
+normalizeLayers();normalizeSun();syncRoom();syncSun();syncViewUI();resize();if(!restored)fit2d();applyI18n();renderCards();fillEditor();updateInfo();setMode(bootMode);tick();
 </script>
 </body>
 </html>
