@@ -599,11 +599,12 @@ function itemsOfLayer(id){
 function renderLayers(){
   const box=$('#c_layers');if(!box)return;box.innerHTML='';
   for(const l of S.layers){
+    const items=itemsOfLayer(l.id);
     const head=document.createElement('div');head.className='card layerhead'+(S.activeLayer===l.id?' sel':'');
-    head.innerHTML=`<div class="top"><span class="x" data-eye="1" style="font-size:13px">${l.visible?'👁':'🚫'}</span><span class="name" style="opacity:${l.visible?1:0.5}">${l.name}</span><span class="x" data-del="1">×</span></div>`;
-    head.onclick=e=>{if(e.target.dataset.eye){l.visible=!l.visible;sync(true);return;}if(e.target.dataset.del){delLayer(l.id);return;}S.activeLayer=l.id;renderLayers();persistSoon();};
+    head.innerHTML=`<div class="top"><span class="x" data-collapse="1" style="font-size:11px;width:12px">${l.collapsed?'▸':'▾'}</span><span class="x" data-eye="1" style="font-size:13px">${l.visible?'👁':'🚫'}</span><span class="name" style="opacity:${l.visible?1:0.5}">${l.name}</span><span style="color:var(--muted);font-size:11px">${items.length}</span><span class="x" data-del="1">×</span></div>`;
+    head.onclick=e=>{if(e.target.dataset.collapse){l.collapsed=!l.collapsed;renderLayers();persistSoon();return;}if(e.target.dataset.eye){l.visible=!l.visible;sync(true);return;}if(e.target.dataset.del){delLayer(l.id);return;}S.activeLayer=l.id;renderLayers();persistSoon();};
     box.appendChild(head);
-    for(const {k,e,label} of itemsOfLayer(l.id)){
+    if(!l.collapsed)for(const {k,e,label} of items){
       const it=document.createElement('div');it.className='litem'+(sel&&sel.kind===k&&sel.id===e.id?' sel':'');
       it.innerHTML=`<span class="ic">${ICON[k]}</span><span class="nm">${label}</span><span class="x" data-del="1">×</span>`;
       it.onclick=ev=>{if(ev.target.dataset.del){delEntity(k,e.id);return;}S.activeLayer=l.id;select(k,e.id);};
