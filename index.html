@@ -165,7 +165,7 @@ const T={ru:{
   ed_obj:'Объект',f_depth:'Глубина, м',f_base:'Низ над полом, м',ed_wall:'Стена',ed_win:'Окно / дверь',f_type:'Тип',ty_window:'Окно',ty_door:'Дверь (в пол)',f_pos:'Позиция, м',f_sill:'Подоконник, м',f_openh:'Высота проёма, м',ed_sun:'Точка солнца',f_sunheight:'Высота, м',btn_del:'Удалить',
   hint_empty:'2D: рисуй стены, ставь окна/двери/мебель, тащи мышью. 3D: тени и дневной свет, gizmo двигает выбранное.',mini_wall:'Длина {0}м. В 2D тащи целиком или за концы.',mini_win:'В 2D тащи окно — скользит по стене и прыгает на ближайшую.',mini_sun:'В 2D/3D тащи жёлтую точку — направление света от неё.',
   card_wall:'стена',card_door:'дверь',card_window:'окно',card_spot:'спот',card_pcs:'св.',
-  hint2d:'клик — выбрать · тащить — двигать · ПКМ/Space — панорама · колесо — зум',hint2d_draw:'Рисование стен: клик — точка, двойной клик / Esc — закончить',hint3d:'клик — выбрать · gizmo — двигать · окно/солнце тащи · ЛКМ-фон — вращать · колесо — зум',
+  hint2d:'клик — выбрать · тащить — двигать · ПКМ/Space — панорама · колесо — зум',hint2d_draw:'Рисование: клик — точка (привязка 0.1м, Shift — свободно, прилипание к концам стен) · двойной клик / Esc — закончить',hint3d:'клик — выбрать · gizmo — двигать · окно/солнце тащи · ЛКМ-фон — вращать · колесо — зум',
   info:'{0} стен · {1} окон/дверей · {2} св. · {3} шин · {4} об.',prompt_pitch:'Шаг, мм:',err_drawfirst:'Сначала нарисуй стены (2D).',err_noscene:'Нет сохранённой сцены.',err_parse:'Не разобрать: ',saved:'Сохранено ✓',
   grp_layers:'Слои',btn_layer:'+ Слой',btn_reset:'Сбросить всё',f_layer:'Слой',layer_name:'Слой',confirm_reset:'Сбросить всю сцену и очистить сохранение?',
   sh_chand:'Люстра (кластер)',f_bulbs:'Лампочек',f_radius:'Радиус, м',f_facing:'Направление',fac_down:'Вниз',fac_up:'Вверх',
@@ -179,7 +179,7 @@ const T={ru:{
   ed_obj:'Object',f_depth:'Depth, m',f_base:'Bottom above floor, m',ed_wall:'Wall',ed_win:'Window / door',f_type:'Type',ty_window:'Window',ty_door:'Door (to floor)',f_pos:'Position, m',f_sill:'Sill, m',f_openh:'Opening height, m',ed_sun:'Sun point',f_sunheight:'Height, m',btn_del:'Delete',
   hint_empty:'2D: draw walls, place windows/doors/furniture, drag with mouse. 3D: shadows and daylight, gizmo moves selection.',mini_wall:'Length {0}m. In 2D drag whole or by endpoints.',mini_win:'In 2D drag the window — it slides along the wall and snaps to the nearest one.',mini_sun:'In 2D/3D drag the yellow point — light comes from it.',
   card_wall:'wall',card_door:'door',card_window:'window',card_spot:'spot on',card_pcs:'lt.',
-  hint2d:'click — select · drag — move · RMB/Space — pan · wheel — zoom',hint2d_draw:'Draw walls: click — point, double-click / Esc — finish',hint3d:'click — select · gizmo — move · drag window/sun · LMB bg — orbit · wheel — zoom',
+  hint2d:'click — select · drag — move · RMB/Space — pan · wheel — zoom',hint2d_draw:'Draw: click — point (snap 0.1m, Shift — free, snaps to wall ends) · double-click / Esc — finish',hint3d:'click — select · gizmo — move · drag window/sun · LMB bg — orbit · wheel — zoom',
   info:'{0} walls · {1} windows/doors · {2} lt. · {3} tracks · {4} obj.',prompt_pitch:'Pitch, mm:',err_drawfirst:'Draw walls first (2D).',err_noscene:'No saved scene.',err_parse:'Parse error: ',saved:'Saved ✓',
   grp_layers:'Layers',btn_layer:'+ Layer',btn_reset:'Reset all',f_layer:'Layer',layer_name:'Layer',confirm_reset:'Reset the whole scene and clear saved data?',
   sh_chand:'Chandelier (cluster)',f_bulbs:'Bulbs',f_radius:'Radius, m',f_facing:'Facing',fac_down:'Down',fac_up:'Up',
@@ -319,7 +319,14 @@ function draw2d(){
   // sun
   drawSun2d();
   // draw-mode preview
-  if(drawMode&&drawPrev){const[sx,sy]=w2s(drawPrev.x,drawPrev.y);g2.fillStyle=getCss('--green');g2.beginPath();g2.arc(sx,sy,5,0,TAU);g2.fill();}
+  if(drawMode){
+    if(drawCur){const[cx,cy]=w2s(drawCur.x,drawCur.y);
+      if(drawPrev){const[px,py]=w2s(drawPrev.x,drawPrev.y);g2.strokeStyle='#7fd08a';g2.setLineDash([7,5]);g2.lineWidth=2;g2.beginPath();g2.moveTo(px,py);g2.lineTo(cx,cy);g2.stroke();g2.setLineDash([]);
+        const len=Math.hypot(drawCur.x-drawPrev.x,drawCur.y-drawPrev.y);g2.fillStyle='#bff0c8';g2.font='12px sans-serif';g2.fillText(len.toFixed(2)+' м',(px+cx)/2+8,(py+cy)/2-6);}
+      g2.fillStyle=drawCur.node?'#ffcf6b':'#7fd08a';g2.beginPath();g2.arc(cx,cy,5,0,TAU);g2.fill();g2.strokeStyle='#0008';g2.lineWidth=1;g2.stroke();
+      g2.fillStyle='#9fe0aa';g2.font='10px sans-serif';g2.fillText(drawCur.x.toFixed(2)+', '+drawCur.y.toFixed(2),cx+10,cy+4);}
+    if(drawPrev){const[px,py]=w2s(drawPrev.x,drawPrev.y);g2.fillStyle='#bff0c8';g2.beginPath();g2.arc(px,py,4,0,TAU);g2.fill();}
+  }
 }
 function getCss(v){return getComputedStyle(document.documentElement).getPropertyValue(v)||'#7fd08a';}
 function drawGrid2d(){
@@ -390,7 +397,7 @@ function drawSun2d(){
 function selIs(k,id){return sel&&sel.kind===k&&sel.id===id;}
 
 /* ---- 2D interaction ---- */
-let drag=null,pan=null,space=false,drawMode=false,drawPrev=null;
+let drag=null,pan=null,space=false,drawMode=false,drawPrev=null,drawCur=null,shiftDown=false;
 function hit2d(sx,sy){
   for(let i=S.lights.length-1;i>=0;i--){const L=S.lights[i];if(!vis(L))continue;const[bx,by]=lightBase(L);const[fx,fy]=w2s(bx,by);if(Math.hypot(fx-sx,fy-sy)<11)return{kind:'light',id:L.id};}
   if(S.sun.on){const[ux,uy]=w2s(S.sun.x,S.sun.y);if(Math.hypot(ux-sx,uy-sy)<12)return{kind:'sun',id:'sun'};}
@@ -403,7 +410,11 @@ function hit2d(sx,sy){
   return null;
 }
 function distSeg(px,py,ax,ay,bx,by){const dx=bx-ax,dy=by-ay,l2=dx*dx+dy*dy;let t=l2?((px-ax)*dx+(py-ay)*dy)/l2:0;t=clamp(t,0,1);return Math.hypot(px-(ax+dx*t),py-(ay+dy*t));}
-function snap2d(x,y){for(const w of S.walls)for(const[ex,ey]of[[w.x1,w.y1],[w.x2,w.y2]])if(Math.hypot(x-ex,y-ey)<0.3)return{x:ex,y:ey};const g=S.room.grid||0.5;return{x:round(Math.round(x/g)*g),y:round(Math.round(y/g)*g)};}
+function snap2d(x,y){
+  for(const w of S.walls)for(const[ex,ey]of[[w.x1,w.y1],[w.x2,w.y2]])if(Math.hypot(x-ex,y-ey)<0.25)return{x:ex,y:ey,node:true};
+  if(shiftDown)return{x:round(x),y:round(y)};         // Shift — свободно (шаг 1 см)
+  const s=0.1;return{x:round(Math.round(x/s)*s),y:round(Math.round(y/s)*s)};   // тонкая привязка 0.1 м
+}
 cv2.addEventListener('mousedown',e=>{
   const r=cv2.getBoundingClientRect(),sx=e.clientX-r.left,sy=e.clientY-r.top;
   if(e.button===2||space){pan={sx,sy,px:view.panx,py:view.pany};return;}
@@ -414,6 +425,7 @@ cv2.addEventListener('mousedown',e=>{
 });
 window.addEventListener('mousemove',e=>{
   if(mode!=='2d')return;const r=cv2.getBoundingClientRect(),sx=e.clientX-r.left,sy=e.clientY-r.top;
+  if(drawMode){const[wx,wy]=s2w(sx,sy);drawCur=snap2d(wx,wy);draw2d();return;}
   if(pan){view.panx=pan.px-(sx-pan.sx)/view.scale;view.pany=pan.py-(sy-pan.sy)/view.scale;draw2d();return;}
   if(!drag)return;const[wx,wy]=s2w(sx,sy),dx=wx-drag.wx0,dy=wy-drag.wy0,m=findModel(drag.kind,drag.id);if(!m)return;
   if(drag.kind==='obj'){m.x=round(drag.snap.x+dx);m.y=round(drag.snap.y+dy);}
@@ -435,11 +447,12 @@ cv2.addEventListener('dblclick',e=>{if(drawMode){endDraw();return;}const r=cv2.g
 cv2.addEventListener('wheel',e=>{e.preventDefault();const r=cv2.getBoundingClientRect(),sx=e.clientX-r.left,sy=e.clientY-r.top,[wx,wy]=s2w(sx,sy);const f=e.deltaY<0?1.12:1/1.12;view.scale=clamp(view.scale*f,8,300);view.panx=wx-sx/view.scale;view.pany=wy-sy/view.scale;draw2d();persistSoon();},{passive:false});
 window.addEventListener('keydown',e=>{
   if(e.code==='Space')space=true;
+  if(e.key==='Shift')shiftDown=true;
   if(e.key==='Escape'&&drawMode)endDraw();
   if((e.key==='Delete'||e.key==='Backspace')&&sel&&sel.kind!=='sun')delEntity(sel.kind,sel.id);
 });
-window.addEventListener('keyup',e=>{if(e.code==='Space')space=false;});
-function endDraw(){drawMode=false;drawPrev=null;$('#drawWall').classList.remove('on');setHint();draw2d();}
+window.addEventListener('keyup',e=>{if(e.code==='Space')space=false;if(e.key==='Shift')shiftDown=false;});
+function endDraw(){drawMode=false;drawPrev=null;drawCur=null;$('#drawWall').classList.remove('on');setHint();draw2d();}
 
 /* ================= 3D ENGINE ================= */
 const cv=$('#cv');
