@@ -480,7 +480,7 @@ function doBuild(){
   root.add(new THREE.HemisphereLight(0xb9c4d6,0x202428,ui.ambient));
   const fw=(bb.maxx-bb.minx)+4,fh=(bb.maxy-bb.miny)+4;
   const floor=new THREE.Mesh(new THREE.PlaneGeometry(fw,fh),mat(0x3a3f48,{roughness:1}));floor.rotation.x=-Math.PI/2;floor.position.set(bb.cx,0,bb.cy);floor.receiveShadow=true;root.add(floor);
-  if(ui.ceiling||S.lights.some(l=>vis(l)&&(l.dir==='up'||l.shape==='chandelier'))){const c=new THREE.Mesh(new THREE.PlaneGeometry(fw,fh),mat(0x2a2e36,{transparent:true,opacity:0.55,side:THREE.DoubleSide}));c.rotation.x=Math.PI/2;c.position.set(bb.cx,ceil,bb.cy);root.add(c);}
+  if(ui.ceiling||S.lights.some(l=>vis(l)&&(l.dir==='up'||l.shape==='chandelier'))){const c=new THREE.Mesh(new THREE.PlaneGeometry(fw,fh),mat(0x32363f,{transparent:true,opacity:0.9,side:THREE.FrontSide}));c.rotation.x=Math.PI/2;c.position.set(bb.cx,ceil,bb.cy);root.add(c);}
   const Q=qcfg();renderer.shadowMap.enabled=Q.sh;curMax=Q.max;curMS=Q.ms;curBlur=Q.blur;renderer.setPixelRatio(Math.min(Q.pr,window.devicePixelRatio||1));
   shadowCount=0;
   for(const w of S.walls)if(vis(w))buildWall(w);
