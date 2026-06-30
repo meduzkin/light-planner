@@ -198,73 +198,88 @@ function persist(){try{localStorage.setItem(SKEY,JSON.stringify({...S,nextId,_la
 
 /* ================= MODEL ================= */
 let nextId=1;
-// конструкторы для дефолтной планировки
-const _W=(id,x1,y1,x2,y2)=>({id,x1,y1,x2,y2,layer:90});
-const _D=(id,name,wallId,pos,width,kind,sill,height)=>({id,name,wallId,pos,width,sill:kind==='door'?0:(sill??0.9),height:height??(kind==='door'?2.1:1.4),kind:kind||'window',layer:90});
-const _O=(id,name,x,y,w,d,h,base=0,color='#9aa7b8')=>({id,name,color,x,y,w,d,h,base,rot:0,layer:91});
-const _L=(id,name,x,y,e={})=>({id,name,color:'#ffe1a8',shape:'point',dir:'down',bulbs:5,radius:0.4,x,y,mh:2.6,beam:50,field:80,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,layer:92,...e});
-// дефолт — квартира по чертежу (приближённо, м)
-function demoScene(){nextId=400;return{
+// дефолт — точная планировка квартиры (импорт пользователя)
+const DEFAULT_SCENE={
   room:{grid:0.5,ceil:2.7},
   walls:[
-    _W(1,0,0,7,0),_W(2,7,0,7,4),_W(3,7,4,9.5,4),_W(4,9.5,4,9.5,12.6),_W(5,9.5,12.6,6.8,12.6),_W(6,6.8,12.6,6.8,11),_W(7,6.8,11,0,11),_W(8,0,11,0,0),
-    _W(9,3.8,0,3.8,11),_W(10,0,4,3.8,4),_W(11,0,7.2,3.8,7.2),
-    _W(12,5.6,0,5.6,4),_W(13,5.6,2.5,7,2.5),
-    _W(14,4.6,4,4.6,7.2),_W(15,6.5,4,6.5,7.2),_W(16,4.6,7.2,6.5,7.2),_W(20,4.6,4,6.5,4),
-    _W(17,3.8,7.2,4.6,7.2),_W(18,6.5,7.2,9.5,7.2)
+    {id:1,x1:0,y1:0,x2:7,y2:0,layer:90},{id:2,x1:7,y1:0,x2:7,y2:4,layer:90},{id:3,x1:7,y1:4,x2:9.5,y2:4,layer:90},
+    {id:4,x1:9.5,y1:4,x2:9.5,y2:12.6,layer:90},{id:5,x1:9.5,y1:12.6,x2:6.8,y2:12.6,layer:90},{id:6,x1:6.8,y1:12.6,x2:6.8,y2:11,layer:90},
+    {id:7,x1:6.8,y1:11,x2:0,y2:11,layer:90},{id:8,x1:0,y1:11,x2:0,y2:0,layer:90},
+    {id:10,x1:0,y1:4,x2:3.8,y2:4,layer:90},{id:11,x1:0,y1:7.2,x2:3.8,y2:7.2,layer:90},
+    {id:14,x1:4.6,y1:4,x2:4.6,y2:7.2,layer:90},{id:15,x1:6.99,y1:4,x2:6.99,y2:7.2,layer:90},{id:16,x1:4.6,y1:7.2,x2:6.5,y2:7.2,layer:90},
+    {id:20,x1:4.6,y1:4,x2:6.97,y2:4.02,layer:90},{id:17,x1:3.8,y1:7.2,x2:4.6,y2:7.2,layer:90},{id:18,x1:6.5,y1:7.2,x2:9.5,y2:7.2,layer:90},
+    {id:400,x1:3.8,y1:4,x2:3.8,y2:10.9,layer:90},{id:401,x1:3.4,y1:0.02,x2:3.4,y2:1.82,layer:90},{id:402,x1:3.46,y1:1.8,x2:5.49,y2:1.78,layer:90},
+    {id:403,x1:5.5,y1:0,x2:5.49,y2:1.78,layer:90},{id:404,x1:4.6,y1:4,x2:4.6,y2:1.8,layer:90},{id:406,x1:3.8,y1:4,x2:4.6,y2:4,layer:90},
+    {id:410,x1:8,y1:4,x2:8,y2:7.2,layer:90}
   ],
   windows:[
-    _D(40,'окно спальня',8,9.5,1.5,'window',0.8,1.4),
-    _D(41,'окно комн.6',8,5.4,1.6,'window',0.8,1.4),
-    _D(42,'окно комн.5',8,2.3,1.6,'window',0.8,1.4),
-    _D(43,'окно комн.5 низ',7,4.8,1.6,'window',0.8,1.4),
-    _D(44,'окно балкон',4,7.8,1.4,'window',0.6,1.6),
-    _D(45,'окно балкон 2',5,1.5,1.2,'window',0.6,1.6),
-    _D(50,'дверь спальня',9,3.4,0.8,'door'),
-    _D(51,'дверь комн.6',9,5.6,0.8,'door'),
-    _D(52,'дверь комн.5',9,9.0,0.8,'door'),
-    _D(53,'дверь санузел',16,0.5,0.7,'door'),
-    _D(54,'вход',4,0.5,0.9,'door'),
-    _D(55,'дверь балкон',6,0.8,1.0,'door')
+    {kind:'window',sill:0.8,height:1.4,width:1.5,pos:9.5,id:40,name:'окно спальня',wallId:8,layer:90},
+    {kind:'window',sill:0.8,height:1.4,width:1.6,pos:5.4,id:41,name:'окно комн.6',wallId:8,layer:90},
+    {kind:'window',sill:0.8,height:1.4,width:1.6,pos:4.8,id:43,name:'окно комн.5 низ',wallId:7,layer:90},
+    {kind:'door',sill:0,height:2,width:1.9,pos:1.3,id:45,name:'окно балкон 2',wallId:5,layer:90},
+    {kind:'door',sill:0,height:2.1,width:0.8,pos:1.49,id:50,name:'дверь спальня',wallId:404,layer:90},
+    {kind:'door',sill:0,height:2.1,width:0.7,pos:0.4,id:53,name:'дверь санузел',wallId:17,layer:90},
+    {kind:'door',sill:0,height:2.1,width:0.9,pos:0.99,id:54,name:'вход',wallId:18,layer:90},
+    {kind:'window',sill:0.65,height:1.25,width:0.7,pos:0.8,id:55,name:'дверь балкон',wallId:6,layer:90},
+    {kind:'door',sill:0,height:2.1,width:0.6,pos:0.86,id:407,name:'дверь',wallId:402,layer:91},
+    {kind:'door',sill:0,height:1.4,width:1.6,pos:0.43,id:408,name:'проём',wallId:406,layer:91},
+    {kind:'door',sill:0,height:2.1,width:0.8,pos:1.72,id:411,name:'дверь',wallId:400,layer:90},
+    {kind:'door',sill:0,height:2.05,width:0.8,pos:5.11,id:412,name:'дверь',wallId:400,layer:90},
+    {kind:'door',sill:0,height:2.1,width:0.8,pos:1.48,id:413,name:'дверь',wallId:14,layer:90},
+    {kind:'door',sill:0,height:2.1,width:0.8,pos:1.85,id:414,name:'дверь',wallId:410,layer:90}
   ],
   tracks:[],
   lights:[
-    _L(60,'спальня',1.6,1.6,{beam:60,field:90}),
-    _L(61,'комната 6',1.9,5.6,{beam:60,field:90}),
-    _L(62,'кабинет 5',1.9,8.6,{beam:60,field:90}),
-    _L(63,'гостиная',5.2,9.2,{shape:'chandelier',bulbs:5,radius:0.35,beam:50,field:80}),
-    _L(64,'кухня',7.7,8.6,{beam:55,field:85}),
-    _L(65,'прихожая',8.0,5.6,{beam:60,field:90}),
-    _L(66,'санузел 7',5.5,5.6,{beam:60,field:90}),
-    _L(67,'санузел 10',6.3,1.3,{beam:60,field:90}),
-    _L(68,'гардероб 9',4.6,1.8,{beam:70,field:100})
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:60,field:90,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:1.85,y:2.12,id:60,name:'спальня',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:60,field:90,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:1.9,y:5.6,id:61,name:'комната 6',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:60,field:90,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:2.06,y:8.83,id:62,name:'кабинет 5',color:'#ffe1a8',layer:92},
+    {shape:'chandelier',dir:'down',bulbs:5,radius:0.35,beam:37,field:9,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:8.27,y:11.72,id:63,name:'гостиная',color:'#ffe1a8',layer:92},
+    {shape:'line',dir:'down',bulbs:5,radius:0.4,beam:31,field:38,tilt:0,az:0,len:0.45,wid:0.3,n:9,n2:4,rot:90,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:7.69,y:9.1,id:64,name:'кухня',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:60,field:90,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:8.81,y:5.67,id:65,name:'прихожая',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:60,field:90,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:5.74,y:5.48,id:66,name:'санузел 7',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:60,field:90,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:6,y:0.89,id:67,name:'санузел 10',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:22,field:25,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:4.52,y:0.83,id:68,name:'гардероб 9',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:60,field:90,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:6.61,y:0.9,id:415,name:'санузел 10',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:60,field:90,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:5.72,y:3.62,id:416,name:'санузел 10',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:60,field:90,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:6.27,y:4.16,id:417,name:'санузел 7',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:60,field:90,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:5.06,y:4.14,id:418,name:'санузел 7',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:60,field:90,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:4.34,y:9.57,id:419,name:'кабинет 5',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:60,field:90,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:4.21,y:9.32,id:420,name:'кабинет 5',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:60,field:90,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:6.85,y:2.07,id:421,name:'санузел 10',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:60,field:90,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:6.86,y:2.86,id:422,name:'санузел 10',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:60,field:90,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:7.56,y:5.33,id:424,name:'прихожая',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:60,field:90,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:4.22,y:5.39,id:425,name:'прихожая',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:31,field:38,tilt:0,az:0,len:0.45,wid:0.3,n:9,n2:4,rot:90,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:9.32,y:8.25,id:426,name:'кухня',color:'#ffe1a8',layer:92},
+    {shape:'point',dir:'down',bulbs:5,radius:0.4,beam:31,field:38,tilt:0,az:0,len:0.45,wid:0.3,n:9,n2:4,rot:90,dmode:'count',pitch:100,trackId:null,u:0,mh:2.6,x:9.33,y:9,id:427,name:'кухня',color:'#ffe1a8',layer:92}
   ],
   objs:[
-    _O(80,'кровать',0.7,0.5,1.6,2.1,0.5,0,'#bcd0e6'),
-    _O(81,'тумба',0.32,0.5,0.34,0.42,0.5,0,'#9aa7b8'),
-    _O(82,'тумба',2.34,0.5,0.34,0.42,0.5,0,'#9aa7b8'),
-    _O(83,'комод',0.7,3.45,2.0,0.4,0.8,0,'#9aa7b8'),
-    _O(84,'шкаф',3.9,0.2,0.6,1.5,2.4,0,'#8f9aac'),
-    _O(85,'шкаф',4.95,0.2,0.6,1.5,2.4,0,'#8f9aac'),
-    _O(86,'душ',5.7,0.15,1.2,1.2,0.06,0,'#bcd0e6'),
-    _O(87,'унитаз',5.75,1.85,0.4,0.6,0.4,0,'#cfd8e3'),
-    _O(88,'раковина',6.45,0.25,0.5,0.4,0.85,0,'#cfd8e3'),
-    _O(89,'ванна',4.72,4.9,0.78,2.07,0.55,0,'#bcd0e6'),
-    _O(90,'унитаз',5.95,4.2,0.4,0.6,0.4,0,'#cfd8e3'),
-    _O(91,'раковина',4.7,4.1,0.55,0.45,0.85,0,'#cfd8e3'),
-    _O(92,'рабочий стол',1.5,9.5,1.2,0.8,0.75,0,'#a8b0bd'),
-    _O(93,'диван',3.95,9.85,2.4,0.95,0.8,0,'#9fb6cf'),
-    _O(94,'ТВ-тумба',4.9,7.35,1.4,0.3,0.5,0,'#7e8aa0'),
-    _O(95,'кух. остров',7.2,8.2,0.9,1.8,0.9,0,'#a8b0bd'),
-    _O(96,'холодильник',8.85,9.8,0.6,0.65,2.0,0,'#8f9aac'),
-    _O(97,'кух. фронт',9.0,7.35,0.5,2.4,0.9,0,'#9aa7b8'),
-    _O(98,'стир+суш',8.85,6.4,0.6,0.6,0.85,0,'#8f9aac'),
-    _O(99,'шкаф прих.',8.4,4.1,1.1,0.6,2.4,0,'#8f9aac'),
-    _O(100,'стол',7.5,11.4,1.1,1.1,0.75,0,'#a8b0bd')
+    {rot:0,id:80,name:'кровать',color:'#bcd0e6',x:1.03,y:0.15,w:1.6,d:2.1,h:0.5,base:0,layer:91},
+    {rot:0,id:81,name:'тумба',color:'#9aa7b8',x:0.52,y:0.15,w:0.34,d:0.42,h:0.5,base:0,layer:91},
+    {rot:0,id:82,name:'тумба',color:'#9aa7b8',x:2.74,y:0.14,w:0.34,d:0.42,h:0.5,base:0,layer:91},
+    {rot:0,id:83,name:'комод',color:'#9aa7b8',x:0.74,y:3.45,w:2,d:0.4,h:0.8,base:0,layer:91},
+    {rot:0,id:84,name:'шкаф',color:'#8f9aac',x:3.45,y:0.05,w:0.6,d:1.7,h:2.4,base:0,layer:91},
+    {rot:0,id:85,name:'шкаф',color:'#8f9aac',x:4.85,y:0.03,w:0.6,d:1.7,h:2.4,base:0,layer:91},
+    {rot:0,id:86,name:'душ',color:'#bcd0e6',x:5.7,y:0.15,w:1.2,d:1.2,h:0.06,base:0,layer:91},
+    {rot:0,id:87,name:'унитаз',color:'#cfd8e3',x:5.54,y:3.36,w:0.4,d:0.6,h:0.4,base:0,layer:91},
+    {rot:0,id:88,name:'раковина',color:'#cfd8e3',x:6.45,y:2.27,w:0.5,d:0.4,h:0.85,base:0,layer:91},
+    {rot:90,id:89,name:'ванна',color:'#bcd0e6',x:5.45,y:5.68,w:0.78,d:2.07,h:0.55,base:0,layer:91},
+    {rot:0,id:90,name:'унитаз',color:'#cfd8e3',x:6.53,y:5.09,w:0.4,d:0.6,h:0.4,base:0,layer:91},
+    {rot:0,id:91,name:'раковина',color:'#cfd8e3',x:5.41,y:4.09,w:0.55,d:0.45,h:0.85,base:0,layer:91},
+    {rot:0,id:92,name:'рабочий стол',color:'#a8b0bd',x:1.37,y:10.14,w:1.2,d:0.8,h:0.75,base:0,layer:91},
+    {rot:0,id:93,name:'диван',color:'#9fb6cf',x:3.88,y:9.97,w:2.4,d:0.95,h:0.8,base:0,layer:91},
+    {rot:0,id:94,name:'ТВ-тумба',color:'#7e8aa0',x:5.12,y:7.27,w:1.4,d:0.3,h:0.5,base:0,layer:91},
+    {rot:0,id:95,name:'кух. остров',color:'#a8b0bd',x:7.2,y:8.2,w:0.9,d:1.8,h:0.9,base:0,layer:91},
+    {rot:0,id:96,name:'холодильник',color:'#8f9aac',x:8.85,y:9.8,w:0.6,d:0.65,h:2,base:0,layer:91},
+    {rot:0,id:97,name:'кух. фронт',color:'#9aa7b8',x:9,y:7.35,w:0.5,d:2.4,h:0.9,base:0,layer:91},
+    {rot:0,id:98,name:'стир+суш',color:'#8f9aac',x:8.85,y:6.4,w:0.6,d:0.6,h:0.85,base:0,layer:91},
+    {rot:0,id:99,name:'шкаф прих.',color:'#8f9aac',x:8.4,y:4.1,w:1.1,d:0.6,h:2.4,base:0,layer:91},
+    {rot:0,id:100,name:'стол',color:'#a8b0bd',x:7.4,y:11.37,w:1.6,d:0.9,h:0.75,base:0,layer:91}
   ],
-  sun:{x:5,y:-6,height:9,on:true,intensity:3.2,sky:0.3,color:'#fff3df',soft:8,winlight:4.5},
-  layers:[{id:90,name:'Планировка',visible:true},{id:91,name:'Мебель',visible:true},{id:92,name:'Свет',visible:true}],activeLayer:91
-};}
+  sun:{x:5,y:-6,height:9,on:false,intensity:3.2,sky:0.3,color:'#fff3df',soft:8,winlight:4.5},
+  layers:[{id:90,name:'Планировка',visible:true,collapsed:false},{id:91,name:'Мебель',visible:true,collapsed:false},{id:92,name:'Свет',visible:true,collapsed:true}],
+  activeLayer:91,nextId:428
+};
+function demoScene(){nextId=DEFAULT_SCENE.nextId||500;const d=DEFAULT_SCENE;return JSON.parse(JSON.stringify({room:d.room,walls:d.walls,windows:d.windows,tracks:d.tracks,lights:d.lights,objs:d.objs,sun:d.sun,layers:d.layers,activeLayer:d.activeLayer}));}
 let S=demoScene();
 let sel=null, mode='2d';
 const ui={intensity:10,ambient:0.1,soft:4,ceiling:false,helpers:false,gizmo:true,quality:'med'};
