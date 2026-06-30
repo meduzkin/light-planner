@@ -467,7 +467,7 @@ function doBuild(){
   root.add(new THREE.HemisphereLight(0xb9c4d6,0x202428,ui.ambient));
   const fw=(bb.maxx-bb.minx)+4,fh=(bb.maxy-bb.miny)+4;
   const floor=new THREE.Mesh(new THREE.PlaneGeometry(fw,fh),mat(0x3a3f48,{roughness:1}));floor.rotation.x=-Math.PI/2;floor.position.set(bb.cx,0,bb.cy);floor.receiveShadow=true;root.add(floor);
-  if(ui.ceiling||S.lights.some(l=>vis(l)&&l.dir==='up')){const c=new THREE.Mesh(new THREE.PlaneGeometry(fw,fh),mat(0x1c2026,{transparent:true,opacity:0.5,side:THREE.DoubleSide}));c.rotation.x=Math.PI/2;c.position.set(bb.cx,ceil,bb.cy);root.add(c);}
+  if(ui.ceiling||S.lights.some(l=>vis(l)&&(l.dir==='up'||l.shape==='chandelier'))){const c=new THREE.Mesh(new THREE.PlaneGeometry(fw,fh),mat(0x2a2e36,{transparent:true,opacity:0.55,side:THREE.DoubleSide}));c.rotation.x=Math.PI/2;c.position.set(bb.cx,ceil,bb.cy);root.add(c);}
   const Q=qcfg();renderer.shadowMap.enabled=Q.sh;curMax=Q.max;curMS=Q.ms;curBlur=Q.blur;renderer.setPixelRatio(Math.min(Q.pr,window.devicePixelRatio||1));
   shadowCount=0;
   for(const w of S.walls)if(vis(w))buildWall(w);
@@ -494,7 +494,13 @@ function buildLight(L){
   const g=new THREE.Group();const offs=emitterOffsets3D(L),col=new THREE.Color(L.color||'#ffd27a').getHex();
   const beam=L.beam||30,field=Math.max(beam,L.field||50),inten=ui.intensity/Math.sqrt(offs.length);
   const b=(L.tilt||0)*D2R,az=(L.az||0)*D2R,yS=L.dir==='up'?1:-1,dir=new THREE.Vector3(Math.sin(b)*Math.cos(az),yS*Math.cos(b),Math.sin(b)*Math.sin(az)).normalize();
-  for(const[ox,oy]of offs){const sl=new THREE.SpotLight(col,inten);sl.position.set(ox,0,oy);sl.angle=Math.max(0.02,(field/2)*D2R);sl.penumbra=clamp(1-beam/field,0,1);sl.decay=0;sl.distance=0;sl.castShadow=shadowCount<curMax;if(sl.castShadow)shadowCount++;sl.shadow.mapSize.set(curMS,curMS);sl.shadow.radius=Math.max(1,ui.soft);sl.shadow.blurSamples=curBlur;sl.shadow.bias=-0.0006;sl.shadow.camera.near=0.08;sl.shadow.camera.far=12;const tgt=new THREE.Object3D();tgt.position.set(ox+dir.x*5,dir.y*5,oy+dir.z*5);g.add(tgt);sl.target=tgt;g.add(sl);const h=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.05,0.07,12),mat(0x15171c,{metalness:0.4,roughness:0.6}));h.position.set(ox,0,oy);g.add(h);if(ui.helpers){const len=3,rad=Math.tan((field/2)*D2R)*len;const cone=new THREE.Mesh(new THREE.ConeGeometry(rad,len,24,1,true),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.06,side:THREE.DoubleSide,depthWrite:false}));const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,-1,0),dir);cone.position.set(ox,0,oy);cone.quaternion.copy(q);cone.translateY(-len/2);g.add(cone);}}
+  for(const[ox,oy]of offs){
+    if(L.shape==='chandelier'){ // лампочки люстры — сферический свет (омни), без направленного луча
+      const pl=new THREE.PointLight(col,inten*1.25,0,0);pl.position.set(ox,0,oy);pl.castShadow=false;g.add(pl);
+      const hb=new THREE.Mesh(new THREE.SphereGeometry(0.05,10,8),new THREE.MeshBasicMaterial({color:col}));hb.position.set(ox,0,oy);g.add(hb);
+      continue;
+    }
+    const sl=new THREE.SpotLight(col,inten);sl.position.set(ox,0,oy);sl.angle=Math.max(0.02,(field/2)*D2R);sl.penumbra=clamp(1-beam/field,0,1);sl.decay=0;sl.distance=0;sl.castShadow=shadowCount<curMax;if(sl.castShadow)shadowCount++;sl.shadow.mapSize.set(curMS,curMS);sl.shadow.radius=Math.max(1,ui.soft);sl.shadow.blurSamples=curBlur;sl.shadow.bias=-0.0006;sl.shadow.camera.near=0.08;sl.shadow.camera.far=12;const tgt=new THREE.Object3D();tgt.position.set(ox+dir.x*5,dir.y*5,oy+dir.z*5);g.add(tgt);sl.target=tgt;g.add(sl);const h=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.05,0.07,12),mat(0x15171c,{metalness:0.4,roughness:0.6}));h.position.set(ox,0,oy);g.add(h);if(ui.helpers){const len=3,rad=Math.tan((field/2)*D2R)*len;const cone=new THREE.Mesh(new THREE.ConeGeometry(rad,len,24,1,true),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.06,side:THREE.DoubleSide,depthWrite:false}));const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,-1,0),dir);cone.position.set(ox,0,oy);cone.quaternion.copy(q);cone.translateY(-len/2);g.add(cone);}}
   tag(g,'light',L.id);root.add(g);groups.set(L.id,g);
 }
 function buildWinExtras(win){
