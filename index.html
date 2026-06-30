@@ -327,7 +327,7 @@ function emitterOffsets3D(L){
   return [[0,0]];
 }
 function emittersPlan(L){const[cx,cy]=lightCenter(L);return emitterOffsets3D(L).map(([ox,oy])=>[cx+ox,cy+oy]);}
-const lightCenter=L=>L.trackId!=null?lightBase(L):[L.x,L.y];
+const lightCenter=L=>lightBase(L);   // учитывает шину И стену (бра)
 function bbox(){if(!S.walls.length)return{minx:0,miny:0,maxx:8,maxy:6,cx:4,cy:3,size:8};let a=Infinity,b=Infinity,c=-Infinity,d=-Infinity;for(const w of S.walls){a=Math.min(a,w.x1,w.x2);b=Math.min(b,w.y1,w.y2);c=Math.max(c,w.x1,w.x2);d=Math.max(d,w.y1,w.y2);}return{minx:a,miny:b,maxx:c,maxy:d,cx:(a+c)/2,cy:(b+d)/2,size:Math.max(c-a,d-b)||8};}
 function projOnWall(w,px,py){const dx=w.x2-w.x1,dy=w.y2-w.y1,L=Math.hypot(dx,dy)||1;let t=clamp(((px-w.x1)*dx+(py-w.y1)*dy)/(L*L),0,1);const cx=w.x1+dx*t,cy=w.y1+dy*t;return{pos:t*L,len:L,cx,cy,dist:Math.hypot(px-cx,py-cy)};}
 function nearestWall(px,py){let best=null;for(const w of S.walls){const r=projOnWall(w,px,py);if(!best||r.dist<best.dist)best={w,...r};}return best;}
@@ -380,9 +380,10 @@ function drawGrid2d(){
 function drawLightFoot2d(L){
   if(L.shape==='sconce'){ // бра — сектор от стены в комнату
     if(L.wallId==null)return;const[bx,by]=lightBase(L),[nx,ny]=sconceNormal(L),ang=Math.atan2(ny,nx);const[sx,sy]=w2s(bx,by);const[r,gg,b]=hexrgb(L.color);
+    const c=Math.max(0.12,Math.cos((L.tilt||0)*D2R));   // наклон вниз уменьшает горизонтальный вылет (как в 3D)
     const hf=(Math.max(L.beam,L.field)/2)*D2R,hb=(L.beam/2)*D2R;
-    g2.fillStyle=`rgba(${r},${gg},${b},0.10)`;g2.beginPath();g2.moveTo(sx,sy);g2.arc(sx,sy,2.6*view.scale,ang-hf,ang+hf);g2.closePath();g2.fill();
-    g2.fillStyle=`rgba(${r},${gg},${b},0.20)`;g2.beginPath();g2.moveTo(sx,sy);g2.arc(sx,sy,2.0*view.scale,ang-hb,ang+hb);g2.closePath();g2.fill();
+    g2.fillStyle=`rgba(${r},${gg},${b},0.10)`;g2.beginPath();g2.moveTo(sx,sy);g2.arc(sx,sy,2.6*c*view.scale,ang-hf,ang+hf);g2.closePath();g2.fill();
+    g2.fillStyle=`rgba(${r},${gg},${b},0.20)`;g2.beginPath();g2.moveTo(sx,sy);g2.arc(sx,sy,2.0*c*view.scale,ang-hb,ang+hb);g2.closePath();g2.fill();
     return;
   }
   if(L.dir==='up')return;   // uplight — на пол не светит
@@ -562,8 +563,8 @@ function buildLight(L){
   if(L.shape==='sconce'&&L.wallId!=null){const[nx,ny]=sconceNormal(L),pitch=(L.tilt||0)*D2R,vs=L.dir==='up'?1:-1;dir=new THREE.Vector3(nx*Math.cos(pitch),vs*Math.sin(pitch),ny*Math.cos(pitch)).normalize();}
   if(L.shape==='sconce'&&L.wallId!=null){ // бра: источник чуть перед стеной, светит по нормали в комнату
     const[nx,ny]=sconceNormal(L),off=0.12;
-    const sl=new THREE.SpotLight(col,inten);sl.position.set(nx*off,0,ny*off);sl.angle=Math.max(0.02,(field/2)*D2R);sl.penumbra=clamp(1-beam/field,0,1);sl.decay=0;sl.distance=0;
-    sl.castShadow=shadowCount<curMax;if(sl.castShadow)shadowCount++;sl.shadow.mapSize.set(curMS,curMS);sl.shadow.radius=Math.max(1,ui.soft);sl.shadow.blurSamples=curBlur;sl.shadow.bias=-0.0006;sl.shadow.camera.near=0.05;sl.shadow.camera.far=14;
+    const sl=new THREE.SpotLight(col,inten*1.4);sl.position.set(nx*off,0,ny*off);sl.angle=Math.max(0.02,(field/2)*D2R);sl.penumbra=clamp(1-beam/field,0,1);sl.decay=0;sl.distance=4.2;  // ограниченная дальность — бра не «пробивает» далёкие зоны
+    sl.castShadow=shadowCount<curMax;if(sl.castShadow)shadowCount++;sl.shadow.mapSize.set(curMS,curMS);sl.shadow.radius=Math.max(1,ui.soft);sl.shadow.blurSamples=curBlur;sl.shadow.bias=-0.0006;sl.shadow.camera.near=0.05;sl.shadow.camera.far=6;
     const tgt=new THREE.Object3D();tgt.position.set(nx*off+dir.x*5,dir.y*5,ny*off+dir.z*5);g.add(tgt);sl.target=tgt;g.add(sl);
     const h=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.14,0.06),mat(0x15171c,{metalness:0.4,roughness:0.6}));g.add(h);
     tag(g,'light',L.id);root.add(g);groups.set(L.id,g);return;
