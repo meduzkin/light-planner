@@ -39,6 +39,14 @@
   .card .meta{color:var(--muted);font-size:11px;margin-top:2px}
   .card .x{color:var(--muted);font-size:15px;padding:0 2px}
   .card .x:hover{color:#ff6b6b}
+  .layerhead{background:#20242d}
+  .litem{display:flex;align-items:center;gap:7px;margin-left:14px;padding:5px 8px;border:1px solid transparent;border-left:2px solid var(--line);border-radius:0 6px 6px 0;cursor:pointer;background:#191c23}
+  .litem:hover{background:#1f242c}
+  .litem.sel{border-color:var(--accent);border-left-color:var(--accent);background:#262017}
+  .litem .ic{width:16px;text-align:center;opacity:.85}
+  .litem .nm{flex:1}
+  .litem .x{color:var(--muted);font-size:14px;padding:0 2px}
+  .litem .x:hover{color:#ff6b6b}
   .hr{height:1px;background:var(--line);margin:13px 0}
   .mini{color:var(--muted);font-size:11px;margin-top:4px}
   #stage{flex:1;position:relative}
@@ -89,12 +97,6 @@
         <div class="row"><label data-i18n="lbl_ceil">Потолок, м</label><input id="rc" type="number" step="0.1"></div>
         <div class="row"><label data-i18n="lbl_grid">Сетка, м</label><input id="rg" type="number" step="0.1"></div>
       </div>
-
-      <div class="grp"><label data-i18n="grp_walls">Стены</label><div class="cards" id="c_walls"></div></div>
-      <div class="grp"><label data-i18n="grp_wins">Окна / двери</label><div class="cards" id="c_wins"></div></div>
-      <div class="grp"><label data-i18n="grp_tracks">Шины</label><div class="cards" id="c_tracks"></div></div>
-      <div class="grp"><label data-i18n="grp_lights">Светильники</label><div class="cards" id="c_lights"></div></div>
-      <div class="grp"><label data-i18n="grp_objs">Объекты</label><div class="cards" id="c_objs"></div></div>
 
       <div class="hr"></div>
       <div id="editor" class="grp"></div>
@@ -470,7 +472,7 @@ cv.addEventListener('pointerdown',e=>{if(e.button!==0)return;down3={x:e.clientX,
 cv.addEventListener('pointerup',e=>{if(e.button!==0||!down3)return;const moved=Math.hypot(e.clientX-down3.x,e.clientY-down3.y)>4,wasG=down3.axis!=null;down3=null;if(moved||wasG)return;const r=cv.getBoundingClientRect();ndc.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(ndc,camera);const h=ray.intersectObjects(selectables,false);if(h.length){const u=h[0].object.userData;select(u.kind,u.id);}else select(null);});
 
 /* ================= shared: select/add/del/cards/editor ================= */
-function select(kind,id){sel=kind?{kind,id}:null;if(mode==='3d'){if(sel&&ui.gizmo)attachGizmo();else tc.detach();}renderCards();fillEditor();if(mode==='2d')draw2d();}
+function select(kind,id){sel=kind?{kind,id}:null;if(sel){const m=findModel(kind,id);if(m&&m.layer!=null)S.activeLayer=m.layer;}if(mode==='3d'){if(sel&&ui.gizmo)attachGizmo();else tc.detach();}renderCards();fillEditor();if(mode==='2d')draw2d();}
 function mkLight(x,y){return{id:nextId++,name:'L'+nextId,color:'#ffd27a',shape:'point',dir:'down',bulbs:5,radius:0.4,x,y,mh:S.room.ceil,beam:28,field:46,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,layer:S.activeLayer};}
 function mkTrack(x,y){return{id:nextId++,name:'шина',color:'#7fd0ff',x,y,len:2,rot:0,mh:S.room.ceil,layer:S.activeLayer};}
 function mkObj(x,y){return{id:nextId++,name:'объект',color:'#9aa7b8',x,y,w:1.6,d:0.9,h:0.9,base:0,layer:S.activeLayer};}
@@ -496,16 +498,32 @@ function delEntity(kind,id){
 }
 function distribute(t,m,p){const fx=S.lights.filter(L=>L.trackId===t.id),k=fx.length;if(!k)return;let us=[];if(m==='pitch'){const span=(k-1)*p;for(let i=0;i<k;i++)us.push(-span/2+i*p);}else{if(k===1)us=[0];else for(let i=0;i<k;i++)us.push((i/(k-1)-0.5)*t.len);}fx.forEach((L,i)=>L.u=clamp(us[i],-t.len/2,t.len/2));sync(false);fillEditor();}
 
-function renderCards(){
-  const Wl=$('#c_walls');Wl.innerHTML='';S.walls.forEach((w,i)=>Wl.appendChild(card({...w,name:t('card_wall')+' '+(i+1),color:'#7e8aa0'},'wall',`${round(wallLen(w))}м`,true)));
-  const Wc=$('#c_wins');Wc.innerHTML='';for(const w of S.windows)Wc.appendChild(card({...w,color:w.kind==='door'?'#7fd08a':'#9fccff'},'win',`${w.kind==='door'?t('card_door'):t('card_window')} · ${w.width}×${w.height}м`,true));
-  const Tc=$('#c_tracks');Tc.innerHTML='';for(const tr of S.tracks)Tc.appendChild(card(tr,'track',`${tr.len}м · ${S.lights.filter(l=>l.trackId===tr.id).length} ${t('card_pcs')}`,false));
-  const L=$('#c_lights');L.innerHTML='';for(const l of S.lights){const tr=l.trackId!=null?getTrack(l.trackId):null;L.appendChild(card(l,'light',(tr?`${t('card_spot')} «${tr.name}»`:l.shape)+` · ${l.beam}°`,false));}
-  const O=$('#c_objs');O.innerHTML='';for(const o of S.objs)O.appendChild(card(o,'obj',`${o.w}×${o.d}×${o.h}м`,true));
-  renderLayers();
+function renderCards(){renderLayers();}
+const ICON={wall:'▬',win:'▢',track:'▭',light:'●',obj:'▪'};
+function itemsOfLayer(id){
+  const out=[];
+  S.walls.forEach((w,i)=>{if(w.layer===id)out.push({k:'wall',e:w,label:`${t('card_wall')} ${i+1} · ${round(wallLen(w))}м`});});
+  S.windows.forEach(w=>{if(w.layer===id)out.push({k:'win',e:w,label:`${w.name} · ${w.width}×${w.height}м`});});
+  S.tracks.forEach(tr=>{if(tr.layer===id)out.push({k:'track',e:tr,label:`${tr.name} · ${tr.len}м`});});
+  S.lights.forEach(l=>{if(l.layer===id){const tr=l.trackId!=null?getTrack(l.trackId):null;out.push({k:'light',e:l,label:`${l.name}${tr?' · '+t('card_spot')+' «'+tr.name+'»':''}`});}});
+  S.objs.forEach(o=>{if(o.layer===id)out.push({k:'obj',e:o,label:`${o.name} · ${o.w}×${o.d}×${o.h}м`});});
+  return out;
 }
-function card(m,kind,meta,sq){const d=document.createElement('div');d.className='card'+(sel&&sel.kind===kind&&sel.id===m.id?' sel':'');d.innerHTML=`<div class="top"><span class="swatch${sq?' sq':''}" style="background:${m.color}"></span><span class="name">${m.name}</span><span class="x" data-del="1">×</span></div><div class="meta">${meta}</div>`;d.onclick=e=>{if(e.target.dataset.del){delEntity(kind,m.id);return;}select(kind,m.id);};return d;}
-function renderLayers(){const box=$('#c_layers');if(!box)return;box.innerHTML='';for(const l of S.layers){const d=document.createElement('div');d.className='card'+(S.activeLayer===l.id?' sel':'');d.innerHTML=`<div class="top"><span class="x" data-eye="1" style="font-size:13px">${l.visible?'👁':'🚫'}</span><span class="name" style="opacity:${l.visible?1:0.5}">${l.name}</span><span class="x" data-del="1">×</span></div>`;d.onclick=e=>{if(e.target.dataset.eye){l.visible=!l.visible;sync(true);return;}if(e.target.dataset.del){delLayer(l.id);return;}S.activeLayer=l.id;renderLayers();persistSoon();};box.appendChild(d);}}
+function renderLayers(){
+  const box=$('#c_layers');if(!box)return;box.innerHTML='';
+  for(const l of S.layers){
+    const head=document.createElement('div');head.className='card layerhead'+(S.activeLayer===l.id?' sel':'');
+    head.innerHTML=`<div class="top"><span class="x" data-eye="1" style="font-size:13px">${l.visible?'👁':'🚫'}</span><span class="name" style="opacity:${l.visible?1:0.5}">${l.name}</span><span class="x" data-del="1">×</span></div>`;
+    head.onclick=e=>{if(e.target.dataset.eye){l.visible=!l.visible;sync(true);return;}if(e.target.dataset.del){delLayer(l.id);return;}S.activeLayer=l.id;renderLayers();persistSoon();};
+    box.appendChild(head);
+    for(const {k,e,label} of itemsOfLayer(l.id)){
+      const it=document.createElement('div');it.className='litem'+(sel&&sel.kind===k&&sel.id===e.id?' sel':'');
+      it.innerHTML=`<span class="ic">${ICON[k]}</span><span class="nm">${label}</span><span class="x" data-del="1">×</span>`;
+      it.onclick=ev=>{if(ev.target.dataset.del){delEntity(k,e.id);return;}S.activeLayer=l.id;select(k,e.id);};
+      box.appendChild(it);
+    }
+  }
+}
 function delLayer(id){if(S.layers.length<=1)return;const rest=S.layers.find(l=>l.id!==id).id;for(const e of allEntities())if(e.layer===id)e.layer=rest;S.layers=S.layers.filter(l=>l.id!==id);if(S.activeLayer===id)S.activeLayer=rest;sync(true);}
 $('#addLayer').onclick=()=>{const l={id:nextId++,name:t('layer_name')+' '+(S.layers.length+1),visible:true};S.layers.push(l);S.activeLayer=l.id;renderLayers();persistSoon();};
 $('#reset').onclick=()=>{if(!confirm(t('confirm_reset')))return;try{localStorage.removeItem('lightspot3');}catch(e){}S=demoScene();normalizeLayers();sel=null;tc.detach();fitted=false;syncRoom();syncSun();fit2d();sync(true);};
@@ -526,7 +544,7 @@ function fillEditor(){
   else if(sel.kind==='wall'){rows.push(H(t('ed_wall')));num('X1','x1',0.1,true);num('Y1','y1',0.1,true);num('X2','x2',0.1,true);num('Y2','y2',0.1,true);rows.push(M(t('mini_wall',round(wallLen(m)))));}
   else if(sel.kind==='win'){rows.push(H(t('ed_win')));txt(t('f_name'),'name');rows.push(FS(t('f_type'),['window','door'],[t('ty_window'),t('ty_door')],m.kind,v=>{m.kind=v;if(v==='door')m.sill=0;commit(true);fillEditor();}));rows.push(FS(t('ed_wall'),S.walls.map(w=>w.id),S.walls.map((w,i)=>t('card_wall')+' '+(i+1)),m.wallId,v=>{m.wallId=parseInt(v);const w=getWall(m.wallId);m.pos=clamp(m.pos,0,wallLen(w));commit(true);}));num(t('f_pos'),'pos',0.1,true,v=>{const w=getWall(m.wallId);return clamp(v,0,w?wallLen(w):v);});num(t('f_width'),'width',0.1,true,v=>Math.max(0.1,v));if(m.kind!=='door')num(t('f_sill'),'sill',0.05,true,v=>Math.max(0,v));num(t('f_openh'),'height',0.05,true,v=>Math.max(0.1,v));rows.push(M(t('mini_win')));}
   else if(sel.kind==='sun'){rows.push(H(t('ed_sun')));num(t('f_x'),'x',0.1,false);num(t('f_y'),'y',0.1,false);num(t('f_sunheight'),'height',0.1,false,v=>Math.max(0.5,v));rows.push(M(t('mini_sun')));}
-  if(sel.kind!=='sun'){rows.push(FS(t('f_layer'),S.layers.map(l=>String(l.id)),S.layers.map(l=>l.name),String(m.layer),v=>{m.layer=parseInt(v);commit(true);}));rows.push(B(t('btn_del'),()=>delEntity(sel.kind,sel.id),false,true));}
+  if(sel.kind!=='sun'){rows.push(FS(t('f_layer'),S.layers.map(l=>String(l.id)),S.layers.map(l=>l.name),String(m.layer),v=>{m.layer=parseInt(v);S.activeLayer=m.layer;commit(true);}));rows.push(B(t('btn_del'),()=>delEntity(sel.kind,sel.id),false,true));}
   rows.forEach(r=>box.appendChild(r));
 }
 function H(t){const d=document.createElement('div');d.className='grp';d.style.margin='0 0 8px';d.innerHTML=`<label>${t}</label>`;return d;}
