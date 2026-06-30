@@ -169,7 +169,7 @@ const T={ru:{
   card_wall:'стена',card_door:'дверь',card_window:'окно',card_spot:'спот',card_pcs:'св.',
   hint2d:'клик — выбрать · тащить — двигать · ПКМ/Space — панорама · колесо — зум',hint2d_draw:'Рисование: клик — точка (привязка 0.1м, Shift — свободно, прилипание к концам стен) · двойной клик / Esc — закончить',hint3d:'клик — выбрать · gizmo — двигать · окно/солнце тащи · ЛКМ-фон — вращать · колесо — зум',
   info:'{0} стен · {1} окон/дверей · {2} св. · {3} шин · {4} об.',prompt_pitch:'Шаг, мм:',err_drawfirst:'Сначала нарисуй стены (2D).',err_noscene:'Нет сохранённой сцены.',err_parse:'Не разобрать: ',saved:'Сохранено ✓',
-  grp_layers:'Слои',btn_layer:'+ Слой',btn_reset:'Сбросить всё',f_layer:'Слой',layer_name:'Слой',confirm_reset:'Сбросить всю сцену и очистить сохранение?',btn_export:'Экспорт',btn_import:'Импорт',
+  grp_layers:'Слои',btn_layer:'+ Слой',btn_reset:'Сбросить всё',f_layer:'Слой',layer_name:'Слой',confirm_reset:'Сбросить всю сцену и очистить сохранение?',btn_export:'Экспорт',btn_import:'Импорт',btn_dup:'Дублировать',
   sh_chand:'Люстра (кластер)',f_bulbs:'Лампочек',f_radius:'Радиус, м',f_facing:'Направление',fac_down:'Вниз',fac_up:'Вверх',
   q_label:'Детализация',q_low:'Схематично',q_med:'Средне',q_high:'Реалистично'
 },en:{
@@ -183,7 +183,7 @@ const T={ru:{
   card_wall:'wall',card_door:'door',card_window:'window',card_spot:'spot on',card_pcs:'lt.',
   hint2d:'click — select · drag — move · RMB/Space — pan · wheel — zoom',hint2d_draw:'Draw: click — point (snap 0.1m, Shift — free, snaps to wall ends) · double-click / Esc — finish',hint3d:'click — select · gizmo — move · drag window/sun · LMB bg — orbit · wheel — zoom',
   info:'{0} walls · {1} windows/doors · {2} lt. · {3} tracks · {4} obj.',prompt_pitch:'Pitch, mm:',err_drawfirst:'Draw walls first (2D).',err_noscene:'No saved scene.',err_parse:'Parse error: ',saved:'Saved ✓',
-  grp_layers:'Layers',btn_layer:'+ Layer',btn_reset:'Reset all',f_layer:'Layer',layer_name:'Layer',confirm_reset:'Reset the whole scene and clear saved data?',btn_export:'Export',btn_import:'Import',
+  grp_layers:'Layers',btn_layer:'+ Layer',btn_reset:'Reset all',f_layer:'Layer',layer_name:'Layer',confirm_reset:'Reset the whole scene and clear saved data?',btn_export:'Export',btn_import:'Import',btn_dup:'Duplicate',
   sh_chand:'Chandelier (cluster)',f_bulbs:'Bulbs',f_radius:'Radius, m',f_facing:'Facing',fac_down:'Down',fac_up:'Up',
   q_label:'Detail',q_low:'Schematic',q_med:'Medium',q_high:'Realistic'
 }};
@@ -451,7 +451,13 @@ window.addEventListener('keydown',e=>{
   if(e.code==='Space')space=true;
   if(e.key==='Shift')shiftDown=true;
   if(e.key==='Escape'&&drawMode)endDraw();
-  if((e.key==='Delete'||e.key==='Backspace')&&sel&&sel.kind!=='sun')delEntity(sel.kind,sel.id);
+  const tn=(e.target.tagName||'');
+  if(!/^(INPUT|SELECT|TEXTAREA)$/.test(tn)){
+    if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='c'){copySel();e.preventDefault();return;}
+    if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='v'){pasteClip();e.preventDefault();return;}
+    if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='d'){if(sel&&sel.kind!=='sun'){duplicateSel();e.preventDefault();}return;}
+    if((e.key==='Delete'||e.key==='Backspace')&&sel&&sel.kind!=='sun')delEntity(sel.kind,sel.id);
+  }
 });
 window.addEventListener('keyup',e=>{if(e.code==='Space')space=false;if(e.key==='Shift')shiftDown=false;});
 function endDraw(){drawMode=false;drawPrev=null;drawCur=null;$('#drawWall').classList.remove('on');setHint();draw2d();}
@@ -583,6 +589,17 @@ function delEntity(kind,id){
   else if(kind==='track'){for(const L of S.lights.filter(l=>l.trackId===id)){const[bx,by]=lightBase(L);L.x=bx;L.y=by;L.mh=lightMH(L);L.trackId=null;}S.tracks=S.tracks.filter(x=>x.id!==id);}
   sel=null;tc.detach();sync(true);
 }
+let clip=null;
+function copySel(){if(sel&&sel.kind!=='sun'){clip={kind:sel.kind,data:JSON.parse(JSON.stringify(findModel(sel.kind,sel.id)))};}}
+function pasteClip(){if(!clip)return;const m={...clip.data,id:nextId++,layer:S.activeLayer};
+  if(clip.kind==='wall'){m.x1+=0.3;m.y1+=0.3;m.x2+=0.3;m.y2+=0.3;S.walls.push(m);}
+  else if(clip.kind==='win'){if(m.wallId!=null){const w=getWall(m.wallId);m.pos=clamp((m.pos||0)+0.3,0,w?wallLen(w):(m.pos||0)+0.3);}S.windows.push(m);}
+  else if(clip.kind==='track'){m.x+=0.3;m.y+=0.3;S.tracks.push(m);}
+  else if(clip.kind==='light'){if(m.trackId!=null)m.u=(m.u||0)+0.2;else{m.x+=0.3;m.y+=0.3;}S.lights.push(m);}
+  else{m.x+=0.3;m.y+=0.3;S.objs.push(m);}
+  sync(true);select(clip.kind,m.id);
+}
+function duplicateSel(){copySel();pasteClip();}
 function distribute(t,m,p){const fx=S.lights.filter(L=>L.trackId===t.id),k=fx.length;if(!k)return;let us=[];if(m==='pitch'){const span=(k-1)*p;for(let i=0;i<k;i++)us.push(-span/2+i*p);}else{if(k===1)us=[0];else for(let i=0;i<k;i++)us.push((i/(k-1)-0.5)*t.len);}fx.forEach((L,i)=>L.u=clamp(us[i],-t.len/2,t.len/2));sync(false);fillEditor();}
 
 function renderCards(){renderLayers();}
@@ -632,7 +649,7 @@ function fillEditor(){
   else if(sel.kind==='wall'){rows.push(H(t('ed_wall')));num('X1','x1',0.1,true);num('Y1','y1',0.1,true);num('X2','x2',0.1,true);num('Y2','y2',0.1,true);rows.push(M(t('mini_wall',round(wallLen(m)))));}
   else if(sel.kind==='win'){rows.push(H(t('ed_win')));txt(t('f_name'),'name');rows.push(FS(t('f_type'),['window','door'],[t('ty_window'),t('ty_door')],m.kind,v=>{m.kind=v;if(v==='door')m.sill=0;commit(true);fillEditor();}));rows.push(FS(t('ed_wall'),S.walls.map(w=>w.id),S.walls.map((w,i)=>t('card_wall')+' '+(i+1)),m.wallId,v=>{m.wallId=parseInt(v);const w=getWall(m.wallId);m.pos=clamp(m.pos,0,wallLen(w));commit(true);}));num(t('f_pos'),'pos',0.1,true,v=>{const w=getWall(m.wallId);return clamp(v,0,w?wallLen(w):v);});num(t('f_width'),'width',0.1,true,v=>Math.max(0.1,v));if(m.kind!=='door')num(t('f_sill'),'sill',0.05,true,v=>Math.max(0,v));num(t('f_openh'),'height',0.05,true,v=>Math.max(0.1,v));rows.push(M(t('mini_win')));}
   else if(sel.kind==='sun'){rows.push(H(t('ed_sun')));num(t('f_x'),'x',0.1,false);num(t('f_y'),'y',0.1,false);num(t('f_sunheight'),'height',0.1,false,v=>Math.max(0.5,v));rows.push(M(t('mini_sun')));}
-  if(sel.kind!=='sun'){rows.push(FS(t('f_layer'),S.layers.map(l=>String(l.id)),S.layers.map(l=>l.name),String(m.layer),v=>{m.layer=parseInt(v);S.activeLayer=m.layer;commit(true);}));rows.push(B(t('btn_del'),()=>delEntity(sel.kind,sel.id),false,true));}
+  if(sel.kind!=='sun'){rows.push(FS(t('f_layer'),S.layers.map(l=>String(l.id)),S.layers.map(l=>l.name),String(m.layer),v=>{m.layer=parseInt(v);S.activeLayer=m.layer;commit(true);}));rows.push(BP(t('btn_dup'),()=>duplicateSel(),t('btn_del'),()=>delEntity(sel.kind,sel.id)));}
   rows.forEach(r=>box.appendChild(r));
 }
 function H(t){const d=document.createElement('div');d.className='grp';d.style.margin='0 0 8px';d.innerHTML=`<label>${t}</label>`;return d;}
