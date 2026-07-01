@@ -180,7 +180,7 @@ const T={ru:{
   ed_obj:'Объект',f_depth:'Глубина, м',f_base:'Низ над полом, м',ed_wall:'Стена',ed_win:'Окно / дверь',f_type:'Тип',ty_window:'Окно',ty_door:'Дверь (в пол)',f_pos:'Позиция, м',f_sill:'Подоконник, м',f_openh:'Высота проёма, м',ed_sun:'Точка солнца',f_sunheight:'Высота, м',btn_del:'Удалить',
   hint_empty:'2D: рисуй стены, ставь окна/двери/мебель, тащи мышью. 3D: тени и дневной свет, gizmo двигает выбранное.',mini_wall:'Длина {0}м. В 2D тащи целиком или за концы.',mini_win:'В 2D тащи окно — скользит по стене и прыгает на ближайшую.',mini_sun:'В 2D/3D тащи жёлтую точку — направление света от неё.',
   card_wall:'стена',card_door:'дверь',card_window:'окно',card_spot:'спот',card_pcs:'св.',
-  hint2d:'клик — выбрать · тащить — двигать · ПКМ/Space — панорама · колесо — зум',hint2d_draw:'Рисование: клик — точка (привязка 0.1м, Shift — свободно, прилипание к концам стен) · двойной клик / Esc — закончить',hint3d:'клик — выбрать · gizmo — двигать · окно/солнце тащи · ЛКМ-фон — вращать · колесо — зум',
+  hint2d:'клик — выбрать · тащить — двигать · ПКМ/Space — панорама · колесо — зум',hint2d_draw:'Рисование: клик — точка (привязка 0.1м, Shift — свободно, прилипание к концам стен) · двойной клик / Esc — закончить',hint3d:'клик — выбрать · тащи окно/солнце (Shift — высота солнца) · стрелки gizmo — точно · ЛКМ-фон — вращать · колесо — зум',
   info:'{0} стен · {1} окон/дверей · {2} св. · {3} шин · {4} об.',prompt_pitch:'Шаг, мм:',err_drawfirst:'Сначала нарисуй стены (2D).',err_noscene:'Нет сохранённой сцены.',err_parse:'Не разобрать: ',saved:'Сохранено ✓',
   grp_layers:'Слои',btn_layer:'+ Слой',btn_reset:'Сбросить всё',f_layer:'Слой',layer_name:'Слой',confirm_reset:'Очистить проект (пустая сцена)?',btn_export:'Экспорт',btn_import:'Импорт',btn_dup:'Дублировать',
   sh_chand:'Люстра (кластер)',sh_sconce:'Бра (на стену)',f_bulbs:'Лампочек',f_radius:'Радиус, м',f_facing:'Направление',fac_down:'Вниз',fac_up:'Вверх',f_power:'Мощность, Вт',
@@ -194,7 +194,7 @@ const T={ru:{
   ed_obj:'Object',f_depth:'Depth, m',f_base:'Bottom above floor, m',ed_wall:'Wall',ed_win:'Window / door',f_type:'Type',ty_window:'Window',ty_door:'Door (to floor)',f_pos:'Position, m',f_sill:'Sill, m',f_openh:'Opening height, m',ed_sun:'Sun point',f_sunheight:'Height, m',btn_del:'Delete',
   hint_empty:'2D: draw walls, place windows/doors/furniture, drag with mouse. 3D: shadows and daylight, gizmo moves selection.',mini_wall:'Length {0}m. In 2D drag whole or by endpoints.',mini_win:'In 2D drag the window — it slides along the wall and snaps to the nearest one.',mini_sun:'In 2D/3D drag the yellow point — light comes from it.',
   card_wall:'wall',card_door:'door',card_window:'window',card_spot:'spot on',card_pcs:'lt.',
-  hint2d:'click — select · drag — move · RMB/Space — pan · wheel — zoom',hint2d_draw:'Draw: click — point (snap 0.1m, Shift — free, snaps to wall ends) · double-click / Esc — finish',hint3d:'click — select · gizmo — move · drag window/sun · LMB bg — orbit · wheel — zoom',
+  hint2d:'click — select · drag — move · RMB/Space — pan · wheel — zoom',hint2d_draw:'Draw: click — point (snap 0.1m, Shift — free, snaps to wall ends) · double-click / Esc — finish',hint3d:'click — select · drag window/sun (Shift = sun height) · gizmo arrows — precise · LMB bg — orbit · wheel — zoom',
   info:'{0} walls · {1} windows/doors · {2} lt. · {3} tracks · {4} obj.',prompt_pitch:'Pitch, mm:',err_drawfirst:'Draw walls first (2D).',err_noscene:'No saved scene.',err_parse:'Parse error: ',saved:'Saved ✓',
   grp_layers:'Layers',btn_layer:'+ Layer',btn_reset:'Reset all',f_layer:'Layer',layer_name:'Layer',confirm_reset:'Clear project (empty scene)?',btn_export:'Export',btn_import:'Import',btn_dup:'Duplicate',
   sh_chand:'Chandelier (cluster)',sh_sconce:'Wall sconce',f_bulbs:'Bulbs',f_radius:'Radius, m',f_facing:'Facing',fac_down:'Down',fac_up:'Up',f_power:'Power, W',
@@ -308,7 +308,9 @@ function normalizeLayers(){
   for(const e of allEntities())if(e.layer==null||!S.layers.find(l=>l.id===e.layer))e.layer=def;
 }
 // держим маркер солнца близко к плану (сохраняя направление), иначе до него не дотянуться
-function normalizeSun(){if(!S.sun)return;const bb=bbox();let dx=S.sun.x-bb.cx,dy=S.sun.y-bb.cy,d=Math.hypot(dx,dy);if(d<0.01){dx=0;dy=-1;d=1;}const want=Math.max(2,bb.size*0.45);if(d>want){S.sun.x=round(bb.cx+dx/d*want);S.sun.y=round(bb.cy+dy/d*want);}}
+function normalizeSun(){if(!S.sun)return;const bb=bbox();let dx=S.sun.x-bb.cx,dy=S.sun.y-bb.cy,d=Math.hypot(dx,dy);if(d<0.01){dx=0;dy=-1;d=1;}const want=Math.max(2,bb.size*0.45);if(d>want){S.sun.x=round(bb.cx+dx/d*want);S.sun.y=round(bb.cy+dy/d*want);}
+  // держим высоту в кадре — иначе маркер уезжает за верх вьюпорта и его не схватить
+  S.sun.height=round(clamp(S.sun.height||6,1.5,Math.max(3,bb.size*0.6)));}
 function layerOf(e){return S.layers.find(l=>l.id===e.layer);}
 function vis(e){const l=layerOf(e);return !l||l.visible;}
 const findModel=(k,id)=> k==='light'?S.lights.find(x=>x.id===id):k==='track'?getTrack(id):k==='win'?S.windows.find(x=>x.id===id):k==='wall'?getWall(id):k==='sun'?S.sun:S.objs.find(x=>x.id===id);
@@ -517,7 +519,7 @@ tc.addEventListener('dragging-changed',e=>{orbit.enabled=!e.value;if(!e.value){i
 tc.addEventListener('objectChange',onGizmo3d);
 const V=(x,y,h)=>new THREE.Vector3(x,h,y);
 let root=new THREE.Group();scene.add(root);
-const groups=new Map();const selectables=[];let sunLight=null,sunMarker=null,fitted=false;
+const groups=new Map();const selectables=[];let sunLight=null,sunMarker=null,sunGuide=null,fitted=false;
 let curMax=4,curMS=1024,curBlur=12,shadowCount=0;   // текущий бюджет/качество теней
 function qcfg(){return ({low:{sh:false,max:0,ms:512,blur:6,pr:1},med:{sh:true,max:8,ms:1024,blur:12,pr:1.5},high:{sh:true,max:18,ms:2048,blur:24,pr:2}})[ui.quality||'med'];}
 const ray=new THREE.Raycaster(),ndc=new THREE.Vector2(),planeY0=new THREE.Plane(new THREE.Vector3(0,1,0),0);
@@ -561,16 +563,20 @@ function buildLight(L){
   const b=(L.tilt||0)*D2R,az=(L.az||0)*D2R,yS=L.dir==='up'?1:-1;
   let dir=new THREE.Vector3(Math.sin(b)*Math.cos(az),yS*Math.cos(b),Math.sin(b)*Math.sin(az)).normalize();
   if(L.shape==='sconce'&&L.wallId!=null){const[nx,ny]=sconceNormal(L),pitch=(L.tilt||0)*D2R,vs=L.dir==='up'?1:-1;dir=new THREE.Vector3(nx*Math.cos(pitch),vs*Math.sin(pitch),ny*Math.cos(pitch)).normalize();}
-  if(L.shape==='sconce'&&L.wallId!=null){ // бра: источник чуть перед стеной, светит по нормали в комнату
-    const[nx,ny]=sconceNormal(L),off=0.12;
-    const sl=new THREE.SpotLight(col,inten*1.4);sl.position.set(nx*off,0,ny*off);sl.angle=Math.max(0.02,(field/2)*D2R);sl.penumbra=clamp(1-beam/field,0,1);sl.decay=0;sl.distance=4.2;  // ограниченная дальность — бра не «пробивает» далёкие зоны
+  if(L.shape==='sconce'&&L.wallId!=null){ // бра: видимый плафон на стене + локальная засветка стены + мягкий поток в комнату
+    const[nx,ny]=sconceNormal(L),off=0.1;
+    // светящийся плафон — чтобы сам светильник был виден на стене
+    const body=new THREE.Mesh(new THREE.SphereGeometry(0.09,16,12),new THREE.MeshBasicMaterial({color:col}));body.position.set(nx*off,0,ny*off);g.add(body);
+    // локальная засветка своей стены вокруг плафона (омни с затуханием, без тени)
+    const glow=new THREE.PointLight(col,ui.intensity*pw*0.6,2.4,2);glow.position.set(nx*off,0,ny*off);glow.castShadow=false;g.add(glow);
+    // направленный поток в комнату (мягкий, с тенями если есть бюджет)
+    const sl=new THREE.SpotLight(col,inten*1.6);sl.position.set(nx*off,0,ny*off);sl.angle=Math.max(0.05,(field/2)*D2R);sl.penumbra=clamp(1-beam/field,0.35,1);sl.decay=0;sl.distance=4.5;
     sl.castShadow=shadowCount<curMax;if(sl.castShadow)shadowCount++;sl.shadow.mapSize.set(curMS,curMS);sl.shadow.radius=Math.max(1,ui.soft);sl.shadow.blurSamples=curBlur;sl.shadow.bias=-0.0006;sl.shadow.camera.near=0.05;sl.shadow.camera.far=6;
     const tgt=new THREE.Object3D();tgt.position.set(nx*off+dir.x*5,dir.y*5,ny*off+dir.z*5);g.add(tgt);sl.target=tgt;g.add(sl);
-    const h=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.14,0.06),mat(0x15171c,{metalness:0.4,roughness:0.6}));g.add(h);
     tag(g,'light',L.id);root.add(g);groups.set(L.id,g);return;
   }
   if(L.shape==='chandelier'){ // люстра: один омни-источник в центре (тень → стены перекрывают свет) + лампочки-сферы
-    const pl=new THREE.PointLight(col,Math.max(ui.intensity*pw*0.9,1),0,0);pl.position.set(0,0,0);
+    const pl=new THREE.PointLight(col,ui.intensity*pw*0.9,0,0);pl.position.set(0,0,0);
     pl.castShadow=shadowCount<curMax;if(pl.castShadow){shadowCount++;pl.shadow.mapSize.set(Math.min(1024,curMS),Math.min(1024,curMS));pl.shadow.bias=-0.002;pl.shadow.camera.near=0.05;pl.shadow.camera.far=Math.max(8,bbox().size);}
     g.add(pl);
     for(const[ox,oy]of offs){const hb=new THREE.Mesh(new THREE.SphereGeometry(0.05,10,8),new THREE.MeshBasicMaterial({color:col}));hb.position.set(ox,0,oy);g.add(hb);}
@@ -588,7 +594,14 @@ function buildWinExtras(win){
 }
 function buildSun(bb,ceil){
   // маркер всегда (чтобы можно было двигать даже при выключенном свете)
-  const mk=new THREE.Group();mk.add(new THREE.Mesh(new THREE.SphereGeometry(0.18,16,12),new THREE.MeshBasicMaterial({color:S.sun.on?0xffe08a:0x6b6450})));tag(mk,'sun','sun');root.add(mk);groups.set('sun',mk);sunMarker=mk;
+  const mk=new THREE.Group();const mc=S.sun.on?0xffe08a:0x8a8060;
+  mk.add(new THREE.Mesh(new THREE.SphereGeometry(0.26,18,14),new THREE.MeshBasicMaterial({color:mc})));
+  const halo=new THREE.Mesh(new THREE.SphereGeometry(0.42,16,12),new THREE.MeshBasicMaterial({color:mc,transparent:true,opacity:0.18,side:THREE.BackSide}));mk.add(halo);
+  tag(mk,'sun','sun');root.add(mk);groups.set('sun',mk);sunMarker=mk;
+  // пунктир от солнца к центру плана — чтобы маркер было видно и понятно направление
+  const gl=new THREE.LineDashedMaterial({color:mc,dashSize:0.4,gapSize:0.3,transparent:true,opacity:0.5});
+  const gg=new THREE.BufferGeometry().setFromPoints([V(S.sun.x,S.sun.y,S.sun.height),V(bb.cx,0.5,bb.cy)]);
+  const gline=new THREE.Line(gg,gl);gline.computeLineDistances();gline.userData.sunGuide=true;root.add(gline);sunGuide=gline;
   if(!S.sun.on)return;
   sunLight=new THREE.DirectionalLight(new THREE.Color(S.sun.color).getHex(),S.sun.intensity);sunLight.castShadow=renderer.shadowMap.enabled;
   const span=bb.size*0.85+2,sc=sunLight.shadow.camera;sc.left=-span;sc.right=span;sc.top=span;sc.bottom=-span;sc.near=0.5;sc.far=bb.size*4+40;
@@ -605,6 +618,7 @@ function layout3d(){
   for(const w of S.walls){const g=groups.get(w.id);if(g){const dx=w.x2-w.x1,dy=w.y2-w.y1;g.position.set(w.x1,0,w.y1);g.rotation.y=Math.atan2(-dy,dx);}}
   for(const win of S.windows){const g=groups.get(win.id);if(g){const w=getWall(win.wallId);if(!w)continue;const len=wallLen(w)||1,ux=(w.x2-w.x1)/len,uy=(w.y2-w.y1)/len,pos=clamp(win.pos,0,len),cx=w.x1+ux*pos,cy=w.y1+uy*pos,sill=win.kind==='door'?0:win.sill,vc=clamp(sill+win.height/2,0,ceil);g.position.set(cx,vc,cy);g.rotation.y=Math.atan2(-uy,ux);}}
   if(sunMarker)sunMarker.position.copy(V(S.sun.x,S.sun.y,S.sun.height));
+  if(sunGuide){sunGuide.geometry.setFromPoints([V(S.sun.x,S.sun.y,S.sun.height),V(bb.cx,0.5,bb.cy)]);sunGuide.computeLineDistances();}
   if(sunLight){sunLight.position.copy(V(S.sun.x,S.sun.y,S.sun.height));sunLight.target.position.set(bb.cx,0.5,bb.cy);}
 }
 function attachGizmo(){if(sel.kind==='win'){tc.detach();return;}const g=groups.get(sel.id);if(!g){tc.detach();return;}tc.attach(g);tc.setMode('translate');const onTrack=sel.kind==='light'&&findModel('light',sel.id).trackId!=null;tc.showX=true;tc.showZ=true;tc.showY=!onTrack;}
@@ -618,8 +632,33 @@ function onGizmo3d(){if(!sel)return;const g=tc.object;if(!g)return;const p=g.pos
 }
 // 3D selection (click)
 let down3=null;
-cv.addEventListener('pointerdown',e=>{if(e.button!==0)return;down3={x:e.clientX,y:e.clientY,axis:tc.axis};});
-cv.addEventListener('pointerup',e=>{if(e.button!==0||!down3)return;const moved=Math.hypot(e.clientX-down3.x,e.clientY-down3.y)>4,wasG=down3.axis!=null;down3=null;if(moved||wasG)return;const r=cv.getBoundingClientRect();ndc.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(ndc,camera);const h=ray.intersectObjects(selectables,false);if(h.length){const u=h[0].object.userData;select(u.kind,u.id);}else select(null);});
+let drag3=null;   // прямое перетаскивание солнца/окна в 3D (без gizmo)
+function ray3(e){const r=cv.getBoundingClientRect();ndc.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(ndc,camera);}
+cv.addEventListener('pointerdown',e=>{if(e.button!==0)return;down3={x:e.clientX,y:e.clientY,axis:tc.axis};
+  if(tc.axis)return;   // курсор на стрелке gizmo — пусть его тащит TransformControls
+  ray3(e);const h=ray.intersectObjects(selectables,false);
+  if(h.length){const u=h[0].object.userData;
+    if(u.kind==='sun'||u.kind==='win'){select(u.kind,u.id);drag3={kind:u.kind,id:u.id,vertical:shiftDown};orbit.enabled=false;cv.setPointerCapture(e.pointerId);}
+  }});
+cv.addEventListener('pointermove',e=>{
+  if(!drag3)return;ray3(e);const pt=new THREE.Vector3();
+  if(drag3.kind==='sun'){
+    if(drag3.vertical){ // Shift зажат при захвате — высота: тащим по вертикальной плоскости, обращённой к камере
+      const cd=new THREE.Vector3();camera.getWorldDirection(cd);cd.y=0;if(cd.lengthSq()<1e-6)cd.set(0,0,1);cd.normalize();
+      const pl=new THREE.Plane().setFromNormalAndCoplanarPoint(cd,new THREE.Vector3(S.sun.x,S.sun.height,S.sun.y));
+      if(ray.ray.intersectPlane(pl,pt))S.sun.height=round(clamp(pt.y,0.5,Math.max(30,bbox().size*2)));
+    } else { // обычный drag — по горизонтали на текущей высоте
+      const pl=new THREE.Plane(new THREE.Vector3(0,1,0),-S.sun.height);if(ray.ray.intersectPlane(pl,pt)){S.sun.x=round(pt.x);S.sun.y=round(pt.z);}
+    }
+    layout3d();
+  }
+  else if(drag3.kind==='win'){const pl=new THREE.Plane(new THREE.Vector3(0,1,0),0);if(ray.ray.intersectPlane(pl,pt)){const nw=nearestWall(pt.x,pt.z);if(nw){const m=findModel('win',drag3.id);m.wallId=nw.w.id;m.pos=round(clamp(nw.pos,0,nw.len));layout3d();fillEditor();drag3.moved=true;}}}
+});
+function endDrag3(e){if(!drag3)return;try{cv.releasePointerCapture(e.pointerId);}catch(_){}const wasWin=drag3.kind==='win'&&drag3.moved;drag3=null;orbit.enabled=true;if(wasWin)build3d();persistSoon();}
+cv.addEventListener('pointerup',e=>{if(e.button!==0)return;if(drag3){endDrag3(e);down3=null;return;}
+  if(!down3)return;const moved=Math.hypot(e.clientX-down3.x,e.clientY-down3.y)>4,wasG=down3.axis!=null;down3=null;if(moved||wasG)return;
+  ray3(e);const h=ray.intersectObjects(selectables,false);if(h.length){const u=h[0].object.userData;select(u.kind,u.id);}else select(null);});
+cv.addEventListener('pointercancel',endDrag3);
 
 /* ================= shared: select/add/del/cards/editor ================= */
 function select(kind,id){sel=kind?{kind,id}:null;if(sel){const m=findModel(kind,id);if(m&&m.layer!=null)S.activeLayer=m.layer;}if(mode==='3d'){if(sel&&ui.gizmo)attachGizmo();else tc.detach();}renderCards();fillEditor();if(mode==='2d')draw2d();}
@@ -780,7 +819,7 @@ function loadData(d){applyScene(d);if(d._view)Object.assign(view,d._view);sel=nu
 function normLight(l){return{shape:'point',dir:'down',bulbs:5,radius:0.4,beam:30,field:50,tilt:0,az:0,len:1.2,wid:0.3,n:16,n2:4,rot:0,dmode:'count',pitch:100,trackId:null,u:0,wallId:null,power:60,mh:2.7,x:0,y:0,...l};}
 function normWin(w){return{kind:'window',sill:0.9,height:1.4,width:1.6,pos:1,...w};}
 function fit2d(){const bb=bbox(),W=cv2.clientWidth||800,Hh=cv2.clientHeight||600,pad=1.2;const s=Math.min(W/((bb.maxx-bb.minx)+2*pad),Hh/((bb.maxy-bb.miny)+2*pad));view.scale=clamp(s,8,300);view.panx=bb.minx-(W/view.scale-(bb.maxx-bb.minx))/2;view.pany=bb.miny-(Hh/view.scale-(bb.maxy-bb.miny))/2;}
-function fit3d(){const bb=bbox();orbit.target.set(bb.cx,0.6,bb.cy);if(!fitted){const d=bb.size||8;camera.position.set(bb.cx+d*0.85,S.room.ceil+d*0.9,bb.cy+d*1.1);fitted=true;}orbit.update();}
+function fit3d(){const bb=bbox();orbit.target.set(bb.cx,0.6,bb.cy);if(!fitted){const d=Math.max(bb.size||8,(S.sun&&S.sun.height||6)*1.6);camera.position.set(bb.cx+d*0.85,S.room.ceil+d*1.0,bb.cy+d*1.15);fitted=true;}orbit.update();}
 $('#fit').onclick=()=>{if(mode==='2d'){fit2d();draw2d();}else{fitted=false;fit3d();}};
 function updateInfo(){$('#info').textContent=t('info',S.walls.length,S.windows.length,S.lights.length,S.tracks.length,S.objs.length);}
 
